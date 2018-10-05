@@ -83,7 +83,7 @@ internal class FxParser
         if (token.val == "using")  { nodes.add(parseUsing);  continue }
         if (token.val == "struct") { nodes.add(parseStruct); continue }
         if (token.val == "comp")   { nodes.add(parseComp);   continue }
-        throw ParseErr("Invalid keyword '$token.val'")
+        throw parseErr("Invalid keyword '$token.val'")
       }
       throw unexpectedToken(token)
     }
@@ -158,7 +158,7 @@ internal class FxParser
         if (token.val == "data")     { data     = parseData;     token=nextToken; continue }
         if (token.val == "update")   { update   = parseUpdate;   token=nextToken; continue }
         if (token.val == "template") { template = parseTemplate; token=nextToken; continue }
-        throw ParseErr("Invalid keyword '$token.val'")
+        throw parseErr("Invalid keyword '$token.val'")
       }
       throw unexpectedToken(token)
     }
@@ -301,7 +301,7 @@ internal class FxParser
     // operators
     if (ch == ':' && peek == '=') return Token(TokenType.assign, ":=")
 
-    throw ParseErr("Invalid char 0x${ch.toHex} ($ch.toChar) [${filename}:$line]")
+    throw parseErr("Invalid char 0x${ch.toHex} ($ch.toChar)")
   }
 
   ** Read in a raw block contained between { and } tokens.
@@ -339,6 +339,12 @@ internal class FxParser
 
   ** Peek next char in stream.
   private Int? peek() { in.peek }
+
+  ** Throw ParseErr
+  private Err parseErr(Str msg)
+  {
+    ParseErr("${msg} [${filename}:$line]")
+  }
 
   ** Throw ParseErr
   private Err unexpectedToken(Token token)
