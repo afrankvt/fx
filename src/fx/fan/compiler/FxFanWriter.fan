@@ -67,20 +67,18 @@ class FxFanWriter
     }
     out.printLine("  }")
 
-    // TODO
-    // // style
-    // style := StrBuf()
-    // comp.style.src.splitLines.each |line|
-    // {
-    //   s := line.trim
-    //   if (s.size == 0) return
-    //   if (s.contains("{")) style.add("[fx-comp='$comp.qname'] ")
-    //   style.add(s).addChar('\n')
-    // }
-    // out.printLine("  static")
-    // out.printLine("  {")
-    // out.printLine("     dom::Win.cur.addStyleRules($style.toStr.toCode)")
-    // out.printLine("  }")
+    // style
+    style := StrBuf()
+    scope := "[fx-comp='$comp.qname']"
+    comp.style.css.splitLines.each |line|
+    {
+      s := line.trim
+      if (s.size > 0) style.add(s.replace("&", scope)).addChar('\n')
+    }
+    out.printLine("  static")
+    out.printLine("  {")
+    out.printLine("     dom::Win.cur.addStyleRules($style.toStr.toCode)")
+    out.printLine("  }")
 
     // template
     out.printLine("  Str __template := Str <|")

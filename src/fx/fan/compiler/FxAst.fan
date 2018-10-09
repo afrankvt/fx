@@ -64,6 +64,7 @@ const class FxCompDef : FxNode
   const Str name
   const FxDataDef data
   const FxUpdateDef update
+  const FxStyleDef style
   const FxTemplateDef template
 
   override Void dump()
@@ -134,6 +135,30 @@ const class FxUpdateDef : FxNode
     echo("  update($argType $argName)")
     echo("  {")
     funcBody.splitLines.each |s|
+    {
+      t := s.trim
+      if (t.size > 0) echo("    $t")
+    }
+    echo("  }")
+  }
+}
+
+*************************************************************************
+** FxStyleDef
+*************************************************************************
+
+const class FxStyleDef : FxNode
+{
+  new make(|This| f) { f(this) }
+
+  ** Style CSS source.
+  const Str css := ""
+
+  override Void dump()
+  {
+    echo("  style")
+    echo("  {")
+    css.splitLines.each |s|
     {
       t := s.trim
       if (t.size > 0) echo("    $t")

@@ -144,7 +144,7 @@ internal class FxParser
   {
     FxDataDef? data
     FxUpdateDef? update
-    // FxStyleDef? style
+    FxStyleDef? style
     FxTemplateDef? template
 
     name := nextToken(TokenType.typeName).val
@@ -157,6 +157,7 @@ internal class FxParser
       {
         if (token.val == "data")     { data     = parseData;     token=nextToken; continue }
         if (token.val == "update")   { update   = parseUpdate;   token=nextToken; continue }
+        if (token.val == "style")    { style    = parseStyle;    token=nextToken; continue }
         if (token.val == "template") { template = parseTemplate; token=nextToken; continue }
         throw parseErr("Invalid keyword '$token.val'")
       }
@@ -167,8 +168,9 @@ internal class FxParser
     {
       it.qname    = "${podName}::$name"
       it.name     = name
-      it.data     = data    ?: FxDataDef {}
-      it.update   = update ?: FxUpdateDef {}
+      it.data     = data     ?: FxDataDef {}
+      it.update   = update   ?: FxUpdateDef {}
+      it.style    = style    ?: FxStyleDef {}
       it.template = template ?: FxTemplateDef {}
     }
   }
@@ -214,6 +216,13 @@ internal class FxParser
       it.argName  = argName
       it.funcBody = funcBody
     }
+  }
+
+  ** Parse a 'style' definition block.
+  private FxNode parseStyle()
+  {
+    css := parseRawBlock
+    return FxStyleDef { it.css=css }
   }
 
   ** Parse a 'template' definition block.
@@ -359,7 +368,7 @@ internal class FxParser
   ])
 
   private static const Str:Str keywords := [:].setList([
-    "using", "struct", "comp", "data", "update", "template"
+    "using", "struct", "comp", "data", "update", "style", "template"
   ])
 
 //////////////////////////////////////////////////////////////////////////
