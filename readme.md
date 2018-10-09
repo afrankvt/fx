@@ -26,3 +26,12 @@ comp HelloWorld
   }
 }
 ```
+
+## Running Tests
+
+Clone repo, build, and open `index.html` in browser:
+
+    $ git clone https://github.com/afrankvt/fx.git
+    $ cd fx
+    $ src/build.fan
+    $ open src/fxTest/test/index.html
