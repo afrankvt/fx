@@ -29,6 +29,8 @@ comp HelloWorld
 
 ## Running Tests
 
+NOTE: fx currently requires running Fantom tip from hg repo.
+
 Clone repo, build, and open `index.html` in browser:
 
     $ git clone https://github.com/afrankvt/fx.git
