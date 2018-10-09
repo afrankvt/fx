@@ -125,9 +125,9 @@ const class FxUpdateDef : FxNode
 {
   new make(|This| f) { f(this) }
 
-  const Str argType   // arg type qname
-  const Str argName   // arg identifier
-  const Str funcBody  // fantom source func body
+  const Str argType  := "Obj?"  // arg type qname
+  const Str argName  := "msg"   // arg identifier
+  const Str funcBody := ""      // fantom source func body
 
   override Void dump()
   {
