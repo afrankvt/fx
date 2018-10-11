@@ -21,7 +21,19 @@ using dom
   {
     this.type = Type.find(this.attr("fx-comp"))
     this.comp = type.make
+    this.addAll(comp->__elems)
     this.update
+
+    // bind events
+    this.querySelectorAll("[fx-click]").each |e|
+    {
+      e.onEvent("click", false)
+      {
+        val := e.attr("fx-click")
+        comp->__update(val)
+        this.update
+      }
+    }
   }
 
   ** TODO
@@ -40,30 +52,17 @@ using dom
     }
     Log.get("fx").info("${comp}.update { $data }")
 
-    // compile/render template
-    template := Mustache(comp->__template.toStr.in)
-    html := template.render(data)
-
-    // TODO: best way todo this?
-    // create frag
-    frag := Elem("div") { it.html=html }
-
-    // TODO: ???
-    // bind event handlers
-    frag.querySelectorAll("[fx-click]").each |e|
+    // update dom
+    this.querySelectorAll("[fx-var]").each |e|
     {
-      e.onEvent("click", false)
-      {
-        val := e.attr("fx-click")
-        comp->__update(val)
-        this.update
-      }
+      name := e.attr("fx-var")
+      val  := data[name]
+      e.text = val?.toStr ?: ""
     }
 
-    // TODO: createFrag won't work here
-    // update dom
-    this.removeAll
-    frag.children.each |e| { frag.remove(e); this.add(e) }
+    // TODO: do we need to re-bind event handlers here?
+
+    // mark clean
     comp->__dirty = false
   }
 

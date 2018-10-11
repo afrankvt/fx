@@ -175,18 +175,66 @@ const class FxTemplateDef : FxNode
 {
   new make(|This| f) { f(this) }
 
-  ** Template source markup.
-  const Str markup := ""
+  ** Template AST.
+  const FxNode[] nodes
 
   override Void dump()
   {
     echo("  template")
     echo("  {")
-    markup.splitLines.each |s|
-    {
-      t := s.trim
-      if (t.size > 0) echo("    $t")
-    }
+    nodes.each |n| { n.dump }
     echo("  }")
   }
+}
+
+*************************************************************************
+** FxTmElemNode
+*************************************************************************
+
+const class FxTmElemNode : FxNode
+{
+  new make(|This| f) { f(this) }
+
+  const Str tagName
+  const Str:Str attrs
+  const FxNode[] kids
+
+  override Void dump()
+  {
+    buf := StrBuf()
+    buf.add("<${tagName}")
+    attrs.each |v,n| { buf.add(" ${n}=\"${v}\"") }
+    buf.add(">")
+    echo("${buf.toStr}")
+    kids.each |k| { k.dump }  // TODO: indent
+    echo("</${tagName}>")
+  }
+}
+
+*************************************************************************
+** FxTmTextNode
+*************************************************************************
+
+const class FxTmTextNode : FxNode
+{
+  new make(|This| f) { f(this) }
+
+  ** Text content for node.
+  const Str text
+
+  override Void dump() { echo(text) }
+}
+
+*************************************************************************
+** FxTmTextNode
+*************************************************************************
+
+const class FxTmVarNode : FxNode
+{
+  new make(|This| f) { f(this) }
+
+  ** Var name for this node.
+  const Str name
+
+  override Void dump() { echo("{{$name}}") }
 }

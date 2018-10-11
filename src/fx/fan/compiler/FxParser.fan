@@ -228,8 +228,10 @@ internal class FxParser
   ** Parse a 'template' definition block.
   private FxNode parseTemplate()
   {
+    start  := line
     markup := parseRawBlock
-    return FxTemplateDef { it.markup=markup }
+    nodes  := FxTemplateParser(filename, Buf().print(markup).flip.in, start).parse
+    return FxTemplateDef { it.nodes=nodes }
   }
 
 //////////////////////////////////////////////////////////////////////////

@@ -22,6 +22,9 @@ class FxFanWriter
   ** Write a new Fantom source file to 'OutStream'
   Void write(OutStream out)
   {
+    // TODO: usings.unique
+    out.printLine("using dom")
+
     usings.each  |u| { out.printLine("using $u.pod") }
     structs.each |s| { writeStruct(s, out) }
     comps.each   |c| { writeComp(c, out) }
@@ -81,19 +84,44 @@ class FxFanWriter
     out.printLine("  }")
 
     // template
-    out.printLine("  Str __template := Str <|")
-    indent := Str.spaces(26)
-    comp.template.markup.splitLines.each |s|
-    {
-      t := s.trim
-      if (t.size > 0) out.print(indent).printLine(t)
-    }
-    out.print(indent).printLine("|>")
+    out.printLine("  private Elem[] __elems := [")
+    comp.template.nodes.each |n| { writeTemplateElem(n, out, 4) }
+    out.printLine("  ]")
 
     // internal flags
     out.printLine("  private Bool __dirty := true")
 
     out.printLine("}")
+  }
+
+  ** Write FxStructDef as a Fantom class source.
+  private Void writeTemplateElem(FxNode node, OutStream out, Int indent)
+  {
+    elem := node as FxTmElemNode
+    if (elem != null)
+    {
+      out.printLine("${Str.spaces(indent)}Elem(\"$elem.tagName\") {")
+      elem.attrs.each |v,n| { out.printLine("${Str.spaces(indent)}  it.setAttr($n.toCode, $v.toCode)") }
+      elem.kids.each |n| { writeTemplateElem(n, out, indent+2) }
+      out.printLine("${Str.spaces(indent)}},")
+      return
+    }
+
+    text := node as FxTmTextNode
+    if (text != null)
+    {
+      out.printLine("${Str.spaces(indent)}Elem(\"span\") {")
+      out.printLine("${Str.spaces(indent)}  it.text=${text.text.toCode}")
+      out.printLine("${Str.spaces(indent)}},")
+      return
+    }
+
+    var := node as FxTmVarNode
+    if (var != null)
+    {
+      out.print("${Str.spaces(indent)}")
+      out.printLine("Elem(\"span\") { it.setAttr(\"fx-var\", \"$var.name\") },")
+    }
   }
 
   const FxNode[] nodes

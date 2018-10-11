@@ -87,7 +87,7 @@ comp InventoryToolbar
     // TODO: pop up dialog...
     items.add(Widget {
       it.name  = "New Item"
-      it.price = 12.50
+      it.price = 12.50f
     })
   }
 
