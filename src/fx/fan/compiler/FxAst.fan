@@ -84,7 +84,17 @@ const class FxCompDef : FxNode
 
 const class FxPropDef : FxNode
 {
-  new make(|This| f) { f(this) }
+  new make(|This| f)
+  {
+    f(this)
+
+    // TODO: set defVals for non-null collection types
+    if (defVal == null)
+    {
+      if (type.endsWith("[]")) defVal = "[,]"
+      // TODO: maps
+    }
+  }
 
   const Str type      // prop qname
   const Str name      // prop name
