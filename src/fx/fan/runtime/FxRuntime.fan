@@ -38,6 +38,20 @@ using dom
     FxElem { it.setAttr("fx-comp", qname); it.mount }
   }
 
+  ** Dump struct field and values to Str.
+  static Str structToStr(Obj struct)
+  {
+    buf := StrBuf()
+    buf.add(struct.typeof.qname).add(" {")
+    struct.typeof.fields.each |f|
+    {
+      if (!f.name.startsWith("__"))
+        buf.add(f.name).addChar('=').add(f.get(struct) ?: "")
+    }
+    buf.add(" }")
+    return buf.toStr
+  }
+
   ** Fx log instance.
   static const Log log := Log.get("fx")
 }

@@ -50,7 +50,8 @@ using dom
       if (!f.name.startsWith("__"))
         data[f.name] = f.get(comp)
     }
-    Log.get("fx").info("${comp}.update { $data }")
+
+    // Log.get("fx").info("${comp}.update { $data }")
 
     // update dom
     this.querySelectorAll("[fx-var]").each |e|
