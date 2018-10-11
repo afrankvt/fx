@@ -230,7 +230,7 @@ internal class FxParser
   {
     start  := line
     markup := parseRawBlock
-    nodes  := FxTemplateParser(filename, Buf().print(markup).flip.in, start).parse
+    nodes  := FxTemplateParser(podName, filename, Buf().print(markup).flip.in, start).parse
     return FxTemplateDef { it.nodes=nodes }
   }
 

@@ -198,6 +198,10 @@ const class FxTmElemNode : FxNode
   const Str tagName
   const Str:Str attrs
   const FxNode[] kids
+  const Str? podName
+
+  Bool isComp() { tagName[0].isUpper }
+  Str qname() { "${podName}::${tagName}" }
 
   override Void dump()
   {

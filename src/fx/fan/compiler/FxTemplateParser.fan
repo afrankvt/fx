@@ -63,8 +63,9 @@ internal class FxTemplateParser
 //////////////////////////////////////////////////////////////////////////
 
   ** Ctor.
-  new make(Str filename, InStream in, Int startLine)
+  new make(Str podName, Str filename, InStream in, Int startLine)
   {
+    this.podName  = podName
     this.filename = filename
     this.in       = in
     this.line     = startLine
@@ -171,6 +172,7 @@ internal class FxTemplateParser
       it.tagName = tagName
       it.attrs   = attrs
       it.kids    = kids
+      it.podName = this.podName // just always set
     }
   }
 
@@ -314,6 +316,7 @@ internal class FxTemplateParser
   private const Int scopeChild := 2
   private const Int scopeVar   := 3
 
+  private const Str podName        // pod name of file
   private const Str filename       // filename for input stream
   private InStream in              // input
   private Int line := 1            // current line

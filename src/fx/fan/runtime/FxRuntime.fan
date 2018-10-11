@@ -11,7 +11,7 @@ using dom
 **
 ** FxRuntime
 **
-@Js internal class FxRuntime
+@NoDoc @Js class FxRuntime
 {
   static
   {
@@ -30,6 +30,12 @@ using dom
 
     dur := (Duration.now - ts).toMillis
     log.info("FxRuntime booted ($comps.size comps, ${dur}ms)")
+  }
+
+  ** Create a new FX element dom node.
+  static Elem elem(Str qname)
+  {
+    FxElem { it.setAttr("fx-comp", qname); it.mount }
   }
 
   ** Fx log instance.

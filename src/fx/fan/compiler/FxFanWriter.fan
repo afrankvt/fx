@@ -24,6 +24,7 @@ class FxFanWriter
   {
     // TODO: usings.unique
     out.printLine("using dom")
+    out.printLine("using fx")
 
     usings.each  |u| { out.printLine("using $u.pod") }
     structs.each |s| { writeStruct(s, out) }
@@ -84,9 +85,12 @@ class FxFanWriter
     out.printLine("  }")
 
     // template
-    out.printLine("  private Elem[] __elems := [")
-    comp.template.nodes.each |n| { writeTemplateElem(n, out, 4) }
-    out.printLine("  ]")
+    out.printLine("  private Elem[] __elems()")
+    out.printLine("  {")
+    out.printLine("    return [")
+    comp.template.nodes.each |n| { writeTemplateElem(n, out, 6) }
+    out.printLine("    ]")
+    out.printLine("  }")
 
     // internal flags
     out.printLine("  private Bool __dirty := true")
@@ -100,6 +104,13 @@ class FxFanWriter
     elem := node as FxTmElemNode
     if (elem != null)
     {
+      if (elem.isComp)
+      {
+        out.print("${Str.spaces(indent)}")
+        out.printLine("FxRuntime.elem(${elem.qname.toCode}),")
+        return
+      }
+
       out.printLine("${Str.spaces(indent)}Elem(\"$elem.tagName\") {")
       elem.attrs.each |v,n| { out.printLine("${Str.spaces(indent)}  it.setAttr($n.toCode, $v.toCode)") }
       elem.kids.each |n| { writeTemplateElem(n, out, indent+2) }

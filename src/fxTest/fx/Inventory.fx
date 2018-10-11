@@ -60,13 +60,13 @@ comp InventoryMgr
 
   template
   {
-    <InventoryToolbar></InventoryToolbar>
+    <InventoryToolbar />
 
-    <div class="sidebar">
-    </div>
+    // <div class="sidebar">
+    // </div>
 
-    <div class="content">
-    </div>
+    // <div class="content">
+    // </div>
   }
 }
 
@@ -84,11 +84,13 @@ comp InventoryToolbar
 
   update(Str msg)
   {
+    if (items == null) items = Widget[,]
     // TODO: pop up dialog...
     items.add(Widget {
       it.name  = "New Item"
       it.price = 12.50f
     })
+    echo(items)
   }
 
   style
@@ -111,6 +113,6 @@ comp InventoryToolbar
 
   template
   {
-    <button>New Widget</button>
+    <button fx-click="new">New Widget</button>
   }
 }
