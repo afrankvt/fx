@@ -114,7 +114,16 @@ using dom
     else
     {
       var := child.attr("fx-var")
-      if (var != null) child.text = data[var]?.toStr ?: ""
+      if (var != null)
+      {
+        path := var.split('.')
+        val  := data[path.first]
+        for (i:=1; i<path.size; i++)
+        {
+          val = val.typeof.field(path[i]).get(val)
+        }
+        child.text = val?.toStr ?: ""
+      }
       child.children.each |k| { render(k, data) }
     }
   }

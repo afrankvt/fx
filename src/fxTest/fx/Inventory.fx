@@ -112,13 +112,21 @@ comp InventorySidebar
       overflow-y: auto;
     }
 
-    & div.item {}
+    & div.item {
+      padding: 10px 20px;
+      border-bottom: 1px solid #f8f8f8;
+    }
+
+    & div.item span.price {
+      float: right;
+    }
   }
 
   template
   {
     <div class="item" fx-for="item in items">
-      {{item}}
+      {{item.name}}
+      <span class="price">${{item.price}}</span>
     </div>
   }
 }

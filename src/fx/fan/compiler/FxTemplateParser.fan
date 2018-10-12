@@ -21,6 +21,7 @@ internal enum class TmTokenType
   equal,
   varStart,
   varEnd,
+  var,
   text,
   eos
 }
@@ -158,7 +159,7 @@ internal class FxTemplateParser
 
       if (token.isVarStart)
       {
-        name := nextToken(TmTokenType.identifier).val
+        name := nextToken(TmTokenType.var).val
         nextToken(TmTokenType.varEnd)
         kids.add(FxTmVarNode { it.name=name })
         continue
@@ -221,7 +222,7 @@ internal class FxTemplateParser
     }
 
     // indentifer
-    if ((isScopeTag || isScopeVar) && ch.isAlpha)
+    if (isScopeTag && ch.isAlpha)
     {
       buf.addChar(ch)
       while (peek != null && (peek.isAlphaNum || peek == ':' || peek == '-'))
@@ -229,6 +230,17 @@ internal class FxTemplateParser
         buf.addChar(read)
       }
       return TmToken(TmTokenType.identifier, buf.toStr)
+    }
+
+    // var
+    if (isScopeVar && ch.isAlpha)
+    {
+      buf.addChar(ch)
+      while (peek != null && (peek.isAlphaNum || peek == '.' || peek == '_'))
+      {
+        buf.addChar(read)
+      }
+      return TmToken(TmTokenType.var, buf.toStr)
     }
 
     // attrVal

@@ -146,6 +146,9 @@ class FxFanWriter
       return
     }
 
+    // TODO: wrapping in <span> can mess up CSS; so should we
+    // do this like React in comment blocks somehow?
+
     var := node as FxTmVarNode
     if (var != null)
     {
