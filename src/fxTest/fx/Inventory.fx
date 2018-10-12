@@ -22,30 +22,12 @@ comp InventoryMgr
 
   style
   {
-    & div.flash { background: #f0f; color: #fff; min-height: 10px; }
-
-    & div.sidebar {
-      box-sizing: border-box;
-      width: 35%;
-      height: 200px;
-      background: #fff;
-      float: left;
-      border: 1px solid #d9d9d9;
-      overflow-x: hidden;
-      overflow-y: auto;
-    }
-
-    & div.content {
-      box-sizing: border-box;
-      margin-left: calc(35% + 10px);
-      height: 200px;
-      background: #fff;
-      border: 1px solid #d9d9d9;
-    }
+    & div.flash { background: #27ae60; color: #fff; padding: 10px; }
   }
 
   template
   {
+    // TODO: close button to remove flash banner
     <div class="flash">{{flash}}</div>
     <InventoryToolbar fx-bind:items fx-bind:flash />
     <InventorySidebar />
@@ -74,14 +56,13 @@ comp InventoryToolbar
         it.name  = "New Item"
         it.price = 12.50f
       })
-      echo(items)
+      flash = "New widget added!"
     }
-    else { flash = "Did this work [$DateTime.now]" }
   }
 
   style
   {
-    & { padding: 5px 0; background: #f00; }
+    & { padding: 5px 0; }
 
     & button {
       font-size: 100%;
@@ -100,7 +81,6 @@ comp InventoryToolbar
   template
   {
     <button fx-click="new">New Widget</button>
-    <button fx-click="test">Test</button>
   }
 }
 
@@ -121,12 +101,23 @@ comp InventorySidebar
 
   style
   {
-    & { height: 100px; background: #080; }
+    & {
+      box-sizing: border-box;
+      width: 35%;
+      height: 200px;
+      background: #fff;
+      float: left;
+      border: 1px solid #d9d9d9;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+
+    & div.item {}
   }
 
   template
   {
-    <div fx-for="item in items">
+    <div class="item" fx-for="item in items">
       {{item}}
     </div>
   }
@@ -148,7 +139,13 @@ comp InventoryContent
 
   style
   {
-    & { height: 100px; background: #ff0; }
+    & {
+      box-sizing: border-box;
+      margin-left: calc(35% + 10px);
+      height: 200px;
+      background: #fff;
+      border: 1px solid #d9d9d9;
+    }
   }
 
   template
