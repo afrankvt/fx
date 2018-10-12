@@ -23,17 +23,7 @@ using dom
     this.comp = type.make
     this.addAll(comp->__elems)
     this.update
-
-    // bind events
-    this.querySelectorAll("[fx-click]").each |e|
-    {
-      e.onEvent("click", false)
-      {
-        val := e.attr("fx-click")
-        comp->__update(val)
-        this.update
-      }
-    }
+    children.each |kid| { bindEvents(kid) }
   }
 
   ** TODO
@@ -52,7 +42,7 @@ using dom
       data[f.name] = f.get(comp)
     }
 
-    // Log.get("fx").info("${comp}.update { $data }")
+    Log.get("fx").info("${comp}.update { $data }")
 
     // update dom
     this.querySelectorAll("[fx-var]").each |e|
@@ -66,6 +56,36 @@ using dom
 
     // mark clean
     comp->__dirty = false
+
+    // TODO: huuuuge hack; but update parents for now until we
+    // sort out how to fire off extern bound data props
+    p := parent
+    while (p != null)
+    {
+      if (p is FxElem) ((FxElem)p).update
+      p = p.parent
+    }
+  }
+
+  ** Walk element and bind event handlers.
+  private Void bindEvents(Elem child)
+  {
+    // stop if we reach a sub-comp
+    if (child.attr("fx-comp") != null) return
+
+    // TODO
+    val := child.attr("fx-click")
+    if (val != null)
+    {
+      echo("@assign [$comp] -> $child")
+      child.onEvent("click", false)
+      {
+        this.comp->__update(val)
+        this.update
+      }
+    }
+
+    child.children.each |k| { bindEvents(k) }
   }
 
   override Str toStr()
