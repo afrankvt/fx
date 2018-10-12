@@ -25,7 +25,7 @@ using dom
     ts := Duration.now
 
     comps := Win.cur.doc.querySelectorAllType("[fx-comp]", FxElem#)
-    comps.each |FxElem c| { c.mount }
+    comps.each |FxElem c| { c.mount; c.update }
     // echo(comps)
 
     dur := (Duration.now - ts).toMillis
@@ -37,17 +37,30 @@ using dom
   {
     elem := FxElem { it.setAttr("fx-comp", qname) }
     elem.mount
-
-    attrs.each |v,n|
-    {
-      if (n.startsWith("fx-bind"))
-      {
-        self  := n["fx-bind:".size..-1]
-        elem.comp.trap("__extern_${self}", parentComp.trap(v))
-      }
-    }
-
+    elem.comp->__parent = parentComp
+    // attrs.each |v,n|
+    // {
+    //   if (n.startsWith("fx-bind"))
+    //   {
+    //     self  := n["fx-bind:".size..-1]
+    //     field := elem.comp.typeof.field("__extern_${self}")
+    //     field.set(elem.comp, parentComp.trap(v))
+    //   }
+    // }
+    elem.update
     return elem
+  }
+
+// TODO: create a FxComp base class; and prob move most of this stuff there
+
+  static Obj? getExtern(Obj parent, Str name)
+  {
+    parent.typeof.field(name).get(parent)
+  }
+
+  static Void setExtern(Obj parent, Str name, Obj val)
+  {
+    parent.typeof.field(name).set(parent, val)
   }
 
   ** Dump struct field and values to Str.

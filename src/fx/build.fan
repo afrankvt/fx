@@ -28,7 +28,7 @@ class Build : build::BuildPod
       `fan/`,
       `fan/build/`,
       `fan/compiler/`,
-      `fan/mustache/`,
+      // `fan/mustache/`,
       `fan/runtime/`
     ]
   }

@@ -47,7 +47,7 @@ comp InventoryMgr
   template
   {
     <div class="flash">{{flash}}</div>
-    <InventoryToolbar fx-bind:items="items" />
+    <InventoryToolbar fx-bind:items="items" fx-bind:flash="flash"/>
     <InventorySidebar />
     <InventoryContent />
   }

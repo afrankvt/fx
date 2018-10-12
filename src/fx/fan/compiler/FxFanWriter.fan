@@ -60,18 +60,11 @@ class FxFanWriter
       out.print("  $p.type $p.name")
       if (p.extern)
       {
-        exname := "__extern_${p.name}"
-
         // no-storage getter/setter
         out.printLine(" {")
-        out.printLine("    get { return $exname }")
-        out.printLine("    set { $exname = it }")
+        out.printLine("    get { FxRuntime.getExtern(__parent, $p.name.toCode) }")
+        out.printLine("    set { FxRuntime.setExtern(__parent, $p.name.toCode, it) }")
         out.printLine("  }")
-
-        // extern reference holder
-        ntype := p.type
-        if (ntype[-1] != '?') ntype += "?"
-        out.printLine("  $ntype $exname")
       }
       else
       {
@@ -111,7 +104,9 @@ class FxFanWriter
     out.printLine("    ]")
     out.printLine("  }")
 
-    // internal flags
+    // internal fields
+    out.printLine("  Obj? __parent")
+    out.printLine("  Str:Str __extern := [:]")
     out.printLine("  private Bool __dirty := true")
 
     out.printLine("}")
@@ -129,6 +124,7 @@ class FxFanWriter
         elem.attrs.each |v,n|
         {
           // TODO: val?
+          if (attrs.size > 0) attrs.addChar(',')
           attrs.add(n.toCode).addChar(':').add(v.toCode)
         }
         if (attrs.isEmpty) attrs.addChar(':')

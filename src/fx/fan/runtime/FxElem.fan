@@ -22,7 +22,6 @@ using dom
     this.type = Type.find(this.attr("fx-comp"))
     this.comp = type.make
     this.addAll(comp->__elems)
-    this.update
     children.each |kid| { bindEvents(kid) }
   }
 
@@ -37,9 +36,8 @@ using dom
     data := Str:Obj?[:]
     comp.typeof.fields.each |f|
     {
-      if (f.name.startsWith("__")) return
-      if (comp.typeof.field("__extern_${f.name}", false) != null) return
-      data[f.name] = f.get(comp)
+      if (!f.name.startsWith("__"))
+        data[f.name] = f.get(comp)
     }
 
     Log.get("fx").info("${comp}.update { $data }")
@@ -77,7 +75,6 @@ using dom
     val := child.attr("fx-click")
     if (val != null)
     {
-      echo("@assign [$comp] -> $child")
       child.onEvent("click", false)
       {
         this.comp->__update(val)
