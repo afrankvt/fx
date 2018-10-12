@@ -37,7 +37,7 @@ using dom
   {
     elem := FxElem { it.setAttr("fx-comp", qname) }
     elem.mount
-    elem.comp->__parent = parentComp
+    elem.comp.__parent = parentComp
     // attrs.each |v,n|
     // {
     //   if (n.startsWith("fx-bind"))
@@ -49,18 +49,6 @@ using dom
     // }
     elem.update
     return elem
-  }
-
-// TODO: create a FxComp base class; and prob move most of this stuff there
-
-  static Obj? getExtern(Obj parent, Str name)
-  {
-    parent.typeof.field(name).get(parent)
-  }
-
-  static Void setExtern(Obj parent, Str name, Obj val)
-  {
-    parent.typeof.field(name).set(parent, val)
   }
 
   ** Dump struct field and values to Str.

@@ -51,7 +51,7 @@ class FxFanWriter
   private Void writeComp(FxCompDef comp, OutStream out)
   {
     // comp type
-    out.printLine("@Js class $comp.name")
+    out.printLine("@Js class $comp.name : FxComp")
     out.printLine("{")
 
     // data
@@ -60,10 +60,11 @@ class FxFanWriter
       out.print("  $p.type $p.name")
       if (p.extern)
       {
+        // TODO: __dirty?
         // no-storage getter/setter
         out.printLine(" {")
-        out.printLine("    get { FxRuntime.getExtern(__parent, $p.name.toCode) }")
-        out.printLine("    set { FxRuntime.setExtern(__parent, $p.name.toCode, it) }")
+        out.printLine("    get { __getExtern($p.name.toCode) }")
+        out.printLine("    set { __setExtern($p.name.toCode, it) }")
         out.printLine("  }")
       }
       else
@@ -97,17 +98,12 @@ class FxFanWriter
     out.printLine("  }")
 
     // template
-    out.printLine("  private Elem[] __elems()")
+    out.printLine("  protected override Elem[] __elems()")
     out.printLine("  {")
     out.printLine("    return [")
     comp.template.nodes.each |n| { writeTemplateElem(n, out, 6) }
     out.printLine("    ]")
     out.printLine("  }")
-
-    // internal fields
-    out.printLine("  Obj? __parent")
-    out.printLine("  Str:Str __extern := [:]")
-    out.printLine("  private Bool __dirty := true")
 
     out.printLine("}")
   }

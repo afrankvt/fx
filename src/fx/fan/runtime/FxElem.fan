@@ -32,14 +32,7 @@ using dom
 // TODO: how does this work for things like modifiying lists?
     //if (comp->__dirty == false) return
 
-    // build var map
-    data := Str:Obj?[:]
-    comp.typeof.fields.each |f|
-    {
-      if (!f.name.startsWith("__"))
-        data[f.name] = f.get(comp)
-    }
-
+    data := comp.__data
     Log.get("fx").info("${comp}.update { $data }")
 
     // update dom
@@ -90,6 +83,6 @@ using dom
     "FxComp { comp=$comp hash=$this.hash }"
   }
 
-  internal Type? type   // comp type
-  internal Obj? comp    // comp instance
+  internal Type? type    // comp type
+  internal FxComp? comp  // comp instance
 }
