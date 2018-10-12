@@ -110,22 +110,33 @@ using dom
         if (i == 0) parent.replace(child, clone)
         else parent.add(clone)
       }
+      return
     }
-    else
+
+    if (child.attr("fx-if") != null)
     {
-      var := child.attr("fx-var")
-      if (var != null)
+      var := child.attr("fx-if")
+      val := data[var]
+      if (val == null || (val is Str && ((Str)val).trim.isEmpty))
       {
-        path := var.split('.')
-        val  := data[path.first]
-        for (i:=1; i<path.size; i++)
-        {
-          val = val.typeof.field(path[i]).get(val)
-        }
-        child.text = val?.toStr ?: ""
+        child.parent.remove(child)
+        return
       }
-      child.children.each |k| { render(k, data) }
     }
+
+    var := child.attr("fx-var")
+    if (var != null)
+    {
+      path := var.split('.')
+      val  := data[path.first]
+      for (i:=1; i<path.size; i++)
+      {
+        val = val.typeof.field(path[i]).get(val)
+      }
+      child.text = val?.toStr ?: ""
+    }
+
+    child.children.each |k| { render(k, data) }
   }
 
   override Str toStr()

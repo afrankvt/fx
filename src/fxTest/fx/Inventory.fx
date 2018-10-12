@@ -20,15 +20,25 @@ comp InventoryMgr
     Str flash
   }
 
+  update(Str msg)
+  {
+    if (msg == "dismiss-flash") flash = ""
+  }
+
   style
   {
     & div.flash { background: #27ae60; color: #fff; padding: 10px; }
+    & div.flash span.close { padding: 0 5px; float: right; cursor: default; }
+    & div.flash span.close:hover { background: #2ecc71; }
   }
 
   template
   {
     // TODO: close button to remove flash banner
-    <div class="flash">{{flash}}</div>
+    <div fx-if="flash" class="flash">
+      {{flash}}
+      <span fx-click="dismiss-flash" class="close">X</span>
+    </div>
     <InventoryToolbar fx-bind:items fx-bind:flash />
     <InventorySidebar />
     <InventoryContent />
