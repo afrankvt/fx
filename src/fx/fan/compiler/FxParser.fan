@@ -122,7 +122,7 @@ internal class FxParser
         pname := nextToken(TokenType.identifier).val
         // TODO: defVal
         token = nextToken
-        props.add(FxPropDef { it.type=ptype; it.name=pname })
+        props.add(FxPropDef { it.extern=false; it.type=ptype; it.name=pname })
       }
       else throw unexpectedToken(token)
     }
@@ -184,13 +184,22 @@ internal class FxParser
     token := nextToken
     while (!token.isBraceClose)
     {
+      // first check for extern keyword
+      extern := false
+      if (token.isKeyword && token.val == "extern")
+      {
+        extern = true
+        token  = nextToken
+      }
+
+      // then parse property def
       if (token.isTypeName)
       {
         ptype := token.val
         pname := nextToken(TokenType.identifier).val
         // TODO: defVal
         token = nextToken
-        props.add(FxPropDef { it.type=ptype; it.name=pname })
+        props.add(FxPropDef { it.extern=extern; it.type=ptype; it.name=pname })
       }
       else throw unexpectedToken(token)
     }
@@ -370,7 +379,7 @@ internal class FxParser
   ])
 
   private static const Str:Str keywords := [:].setList([
-    "using", "struct", "comp", "data", "update", "style", "template"
+    "using", "struct", "comp", "data", "extern", "update", "style", "template"
   ])
 
 //////////////////////////////////////////////////////////////////////////

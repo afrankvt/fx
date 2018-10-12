@@ -96,6 +96,7 @@ const class FxPropDef : FxNode
     }
   }
 
+  const Bool extern   // is extern (data.props only)
   const Str type      // prop qname
   const Str name      // prop name
   const Str? defVal   // opt defVal expr

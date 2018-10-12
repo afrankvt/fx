@@ -47,8 +47,9 @@ using dom
     data := Str:Obj?[:]
     comp.typeof.fields.each |f|
     {
-      if (!f.name.startsWith("__"))
-        data[f.name] = f.get(comp)
+      if (f.name.startsWith("__")) return
+      if (comp.typeof.field("__extern_${f.name}", false) != null) return
+      data[f.name] = f.get(comp)
     }
 
     // Log.get("fx").info("${comp}.update { $data }")
@@ -72,6 +73,6 @@ using dom
     "FxComp { comp=$comp hash=$this.hash }"
   }
 
-  private Type? type   // comp type
-  private Obj? comp    // comp instance
+  internal Type? type   // comp type
+  internal Obj? comp    // comp instance
 }

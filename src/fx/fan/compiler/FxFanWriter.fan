@@ -58,8 +58,26 @@ class FxFanWriter
     comp.data.props.each |p|
     {
       out.print("  $p.type $p.name")
-      if (p.defVal != null) out.print(" := $p.defVal")
-      out.printLine(" { private set { &${p.name}=it; __dirty=true }}")
+      if (p.extern)
+      {
+        exname := "__extern_${p.name}"
+
+        // no-storage getter/setter
+        out.printLine(" {")
+        out.printLine("    get { return $exname }")
+        out.printLine("    set { $exname = it }")
+        out.printLine("  }")
+
+        // extern reference holder
+        ntype := p.type
+        if (ntype[-1] != '?') ntype += "?"
+        out.printLine("  $ntype $exname")
+      }
+      else
+      {
+        if (p.defVal != null) out.print(" := $p.defVal")
+        out.printLine(" { private set { &${p.name}=it; __dirty=true }}")
+      }
     }
 
     // update
@@ -107,8 +125,16 @@ class FxFanWriter
     {
       if (elem.isComp)
       {
+        attrs := StrBuf()
+        elem.attrs.each |v,n|
+        {
+          // TODO: val?
+          attrs.add(n.toCode).addChar(':').add(v.toCode)
+        }
+        if (attrs.isEmpty) attrs.addChar(':')
+
         out.print("${Str.spaces(indent)}")
-        out.printLine("FxRuntime.elem(${elem.qname.toCode}),")
+        out.printLine("FxRuntime.elem(this, ${elem.qname.toCode}, [${attrs}]),")
         return
       }
 

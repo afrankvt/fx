@@ -26,16 +26,28 @@ using dom
 
     comps := Win.cur.doc.querySelectorAllType("[fx-comp]", FxElem#)
     comps.each |FxElem c| { c.mount }
-    echo(comps)
+    // echo(comps)
 
     dur := (Duration.now - ts).toMillis
     log.info("FxRuntime booted ($comps.size comps, ${dur}ms)")
   }
 
   ** Create a new FX element dom node.
-  static Elem elem(Str qname)
+  static Elem elem(Obj parentComp, Str qname, Str:Str attrs)
   {
-    FxElem { it.setAttr("fx-comp", qname); it.mount }
+    elem := FxElem { it.setAttr("fx-comp", qname) }
+    elem.mount
+
+    attrs.each |v,n|
+    {
+      if (n.startsWith("fx-bind"))
+      {
+        self  := n["fx-bind:".size..-1]
+        elem.comp.trap("__extern_${self}", parentComp.trap(v))
+      }
+    }
+
+    return elem
   }
 
   ** Dump struct field and values to Str.

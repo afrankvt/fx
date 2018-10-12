@@ -16,9 +16,7 @@ comp InventoryMgr
 {
   data
   {
-    // TODO: Widget[] items := [,] -> defVal support; any expr??
-    // TODO: impl def val for lists?
-    Widget[]? items
+    Widget[] items
   }
 
   style
@@ -60,13 +58,9 @@ comp InventoryMgr
 
   template
   {
-    <InventoryToolbar />
-
-    // <div class="sidebar">
-    // </div>
-
-    // <div class="content">
-    // </div>
+    <InventoryToolbar fx-bind:items="items" />
+    <InventorySidebar />
+    <InventoryContent />
   }
 }
 
@@ -78,13 +72,11 @@ comp InventoryToolbar
 {
   data
   {
-    // TODO: impl def val for lists?
-    Widget[]? items
+    extern Widget[] items
   }
 
   update(Str msg)
   {
-    if (items == null) items = Widget[,]
     // TODO: pop up dialog...
     items.add(Widget {
       it.name  = "New Item"
@@ -114,5 +106,55 @@ comp InventoryToolbar
   template
   {
     <button fx-click="new">New Widget</button>
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////
+// InventorySidebar
+//////////////////////////////////////////////////////////////////////////
+
+comp InventorySidebar
+{
+  data
+  {
+  }
+
+  update(Str msg)
+  {
+  }
+
+  style
+  {
+    & { height: 100px; background: #080; }
+  }
+
+  template
+  {
+    <div></div>
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////
+// InventoryContent
+//////////////////////////////////////////////////////////////////////////
+
+comp InventoryContent
+{
+  data
+  {
+  }
+
+  update(Str msg)
+  {
+  }
+
+  style
+  {
+    & { height: 100px; background: #ff0; }
+  }
+
+  template
+  {
+    <div></div>
   }
 }
