@@ -22,7 +22,6 @@ using dom
     this.type = Type.find(this.attr("fx-comp"))
     this.comp = type.make
     this.addAll(comp->__elems)
-    children.each |kid| { bindEvents(kid) }
   }
 
   ** TODO
@@ -35,15 +34,19 @@ using dom
     data := comp.__data
     Log.get("fx").info("${comp}.update { $data }")
 
+    // TODO: holy moly how should this work
     // update dom
-    this.querySelectorAll("[fx-var]").each |e|
+    this.removeAll
+    comp.__elems.each |kid|
     {
-      name := e.attr("fx-var")
-      val  := data[name]
-      e.text = val?.toStr ?: ""
+      this.add(kid)
+      render(kid, data)
     }
 
-    // TODO: do we need to re-bind event handlers here?
+    // TODO -- not sure how this works; but as things stand
+    // this should prob go into `render()`??
+    // bind events
+    children.each |kid| { bindEvents(kid) }
 
     // mark clean
     comp->__dirty = false
@@ -76,6 +79,44 @@ using dom
     }
 
     child.children.each |k| { bindEvents(k) }
+  }
+
+  // TODO: terminology here: what are {{foo}} called?; 'render'?
+
+  ** Walk elements updating templates.
+  private Void render(Elem child, Str:Obj data)
+  {
+    // stop if we reach a sub-comp
+    if (child.attr("fx-comp") != null) return
+
+    forloop := child.attr("fx-for")
+    if (forloop != null)
+    {
+      // TODO: yikes
+      p := forloop.split(' ')
+      var  := p[0]
+      prop := p[2]
+      parent := child.parent
+
+      // super primitive to get basic list looping working...
+      (data[prop] as List).each |item,i|
+      {
+        data[var] = item
+
+        clone := child.clone
+        clone.removeAttr("fx-for")
+        clone.children.each |k| { render(k, data) }
+
+        if (i == 0) parent.replace(child, clone)
+        else parent.add(clone)
+      }
+    }
+    else
+    {
+      var := child.attr("fx-var")
+      if (var != null) child.text = data[var]?.toStr ?: ""
+      child.children.each |k| { render(k, data) }
+    }
   }
 
   override Str toStr()
