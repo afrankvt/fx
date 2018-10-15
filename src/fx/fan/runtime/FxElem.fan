@@ -81,7 +81,14 @@ using dom
     child.children.each |k| { bindEvents(k) }
   }
 
+  //
+  //
   // TODO: terminology here: what are {{foo}} called?; 'render'?
+  //
+  // Is {{foo}} a macro???  what do other toolkits called them?
+  // Mustache usees "tag" which is prob not a good term for us...?
+  //
+  //
 
   ** Walk elements updating templates.
   private Void render(Elem child, Str:Obj data)
