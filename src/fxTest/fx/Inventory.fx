@@ -66,7 +66,6 @@ comp InventoryToolbar
       items.add(Widget {
         it.name  = "New Item"
         it.price = 12.50f
-        it.selected = true
       })
       flash = "New widget added!"
     }
@@ -109,6 +108,11 @@ comp InventorySidebar
 
   update(Str msg)
   {
+    if (msg.startsWith("select"))
+    {
+      index := msg.split.last.toInt
+      items.each |item,i| { item.selected = i == index }
+    }
   }
 
   style
@@ -142,9 +146,9 @@ comp InventorySidebar
 
   template
   {
-    <div class="list-item" fx-for="item in items">
-      <div fx-if:class:selected="item.selected">
-        {{item.name}}
+    <div class="list-item" fx-for="(item,index) in items">
+      <div fx-if:class:selected="item.selected" fx-click="select {{index}}">
+        {{index}}: {{item.name}}
         <span class="price">${{item.price}}</span>
       </div>
     </div>

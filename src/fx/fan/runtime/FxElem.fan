@@ -98,10 +98,20 @@ using dom
       prop := p[2]
       parent := child.parent
 
+      // TODO: yikes
+      Str? ivar := null
+      if (var[0] == '(')
+      {
+        p = var[1..-2].split(',')
+        var  = p[0]
+        ivar = p[1]
+      }
+
       // super primitive to get basic list looping working...
       (data[prop] as List).each |item,i|
       {
         data[var] = item
+        if (ivar != null) data[ivar] = i
 
         clone := child.clone
         clone.removeAttr("fx-for")
@@ -148,6 +158,11 @@ using dom
       val := resolveVar(var, data)
       child.text = val?.toStr ?: ""
     }
+
+    // TODO: super hack!!!!
+    x := child.attr("fx-click")
+    if (x != null && x.contains("select {{index}}"))
+      child.setAttr("fx-click", x.replace("{{index}}", data["index"]?.toStr ?: ""))
 
     child.children.each |k| { render(k, data) }
   }
