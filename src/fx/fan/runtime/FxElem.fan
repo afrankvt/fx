@@ -113,30 +113,64 @@ using dom
       return
     }
 
-    if (child.attr("fx-if") != null)
+    // check for fx-if conditionals
+    attrs := child.attrs.keys
+    for (i:=0; i<attrs.size; i++)
     {
-      var := child.attr("fx-if")
-      val := data[var]
-      if (val == null || (val is Str && ((Str)val).trim.isEmpty))
+      attr := attrs[i]
+      if (!attr.startsWith("fx-if")) continue
+
+      // node level
+      if (child.attr("fx-if") != null)
       {
-        child.parent.remove(child)
-        return
+        var := child.attr("fx-if")
+        val := data[var]
+        if (!isTruthy(val)) { child.parent.remove(child); return }
+      }
+      else
+      {
+        // attr level
+        // TODO: not sure how this should work?
+        var := child.attr(attr)
+        if (attr.contains(":class:"))
+        {
+          cname := attr["fx-if:class:".size..-1]
+          val   := resolveVar(var, data)
+          child.style.toggleClass(cname, isTruthy(val))
+        }
       }
     }
 
+    // check for vars
     var := child.attr("fx-var")
     if (var != null)
     {
-      path := var.split('.')
-      val  := data[path.first]
-      for (i:=1; i<path.size; i++)
-      {
-        val = val.typeof.field(path[i]).get(val)
-      }
+      val := resolveVar(var, data)
       child.text = val?.toStr ?: ""
     }
 
     child.children.each |k| { render(k, data) }
+  }
+
+  ** Resolve a variable to a data value.
+  private Obj? resolveVar(Str var, Str:Obj data)
+  {
+    path := var.split('.')
+    val  := data[path.first]
+    for (i:=1; i<path.size; i++)
+    {
+      val = val.typeof.field(path[i]).get(val)
+    }
+    return val
+  }
+
+  ** Is value 'truthy'
+  private Bool isTruthy(Obj? val)
+  {
+    if (val is Bool) return val
+    if (val is Str)  return ((Str)val).size > 0
+    if (val != null) return true
+    return false
   }
 
   override Str toStr()

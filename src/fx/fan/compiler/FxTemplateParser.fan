@@ -248,6 +248,7 @@ internal class FxTemplateParser
     {
       while (peek != null && peek != '\"')
       {
+        if (peek == '\\') read
         buf.addChar(read)
       }
       if (peek == '\"') read

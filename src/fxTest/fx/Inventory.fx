@@ -6,6 +6,7 @@ struct Widget
 {
   Str name
   Float price
+  Bool selected
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -65,6 +66,7 @@ comp InventoryToolbar
       items.add(Widget {
         it.name  = "New Item"
         it.price = 12.50f
+        it.selected = true
       })
       flash = "New widget added!"
     }
@@ -122,21 +124,29 @@ comp InventorySidebar
       overflow-y: auto;
     }
 
-    & div.item {
+    & div.list-item div {
       padding: 10px 20px;
       border-bottom: 1px solid #f8f8f8;
     }
 
-    & div.item span.price {
+    & div.list-item div span.price {
       float: right;
+    }
+
+    & div.list-item div.selected {
+      background: #3498db;
+      color: #fff;
+      border-color: #2980b9;
     }
   }
 
   template
   {
-    <div class="item" fx-for="item in items">
-      {{item.name}}
-      <span class="price">${{item.price}}</span>
+    <div class="list-item" fx-for="item in items">
+      <div fx-if:class:selected="item.selected">
+        {{item.name}}
+        <span class="price">${{item.price}}</span>
+      </div>
     </div>
   }
 }
