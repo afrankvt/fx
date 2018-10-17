@@ -94,7 +94,9 @@ using dom
   private Void render(Elem child, Str:Obj data)
   {
     // stop if we reach a sub-comp
-    if (child.attr("fx-comp") != null) return
+//    if (child.attr("fx-comp") != null) return
+// TODO!!!!
+isComp := child.attr("fx-comp") != null
 
     forloop := child.attr("fx-for")
     if (forloop != null)
@@ -171,7 +173,8 @@ using dom
     if (x != null && x.contains("select {{index}}"))
       child.setAttr("fx-click", x.replace("{{index}}", data["index"]?.toStr ?: ""))
 
-    child.children.each |k| { render(k, data) }
+    // child.children.each |k| { render(k, data) }
+    if (!isComp) child.children.each |k| { render(k, data) }
   }
 
   ** Resolve a variable to a data value.

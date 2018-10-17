@@ -19,6 +19,7 @@ comp InventoryMgr
   {
     Widget[] items
     Str flash
+    Bool showAddItem
   }
 
   update(Str msg)
@@ -40,9 +41,12 @@ comp InventoryMgr
       {{flash}}
       <span fx-click="dismiss-flash" class="close">X</span>
     </div>
-    <InventoryToolbar fx-bind:items fx-bind:flash />
+    <InventoryToolbar fx-bind:showAddItem />
     <InventorySidebar />
     <InventoryContent />
+
+    // modals
+    <AddItemModal fx-if="showAddItem" fx-bind:showAddItem />
   }
 }
 
@@ -54,21 +58,12 @@ comp InventoryToolbar
 {
   data
   {
-    extern Widget[] items
-    extern Str flash
+    extern Bool showAddItem
   }
 
   update(Str msg)
   {
-    if (msg == "new")
-    {
-      // TODO: pop up dialog...
-      items.add(Widget {
-        it.name  = "New Item"
-        it.price = 12.50f
-      })
-      flash = "New widget added!"
-    }
+    if (msg == "new") showAddItem = true
   }
 
   style
@@ -183,5 +178,80 @@ comp InventoryContent
   template
   {
     <div>TODO</div>
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////
+// AddItemModal
+//////////////////////////////////////////////////////////////////////////
+
+comp AddItemModal
+{
+  data
+  {
+    extern Widget[] items
+    extern Bool showAddItem
+  }
+
+  update(Str msg)
+  {
+    if (msg == "ok")    { showAddItem=false; return }
+    if (msg == "close") { showAddItem=false; return }
+  }
+
+  style
+  {
+    & div.mask {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.25);
+    }
+
+    & div.modal {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 20px;
+      background: #fff;
+      border: 1px solid #ccc;
+      box-shadow: #777 0px 6px 16px;
+      width: 400px;
+    }
+
+    & h2 { margin: 0; }
+
+    & div.modal div:last-child { text-align: right; }
+
+    & button {
+      font-size: 100%;
+      background: #fcfcfc;
+      border: 1px solid #bbb;
+      border-radius: 3px;
+      padding: 4px 10px;
+      min-width: 70px;
+    }
+
+    & button:active {
+      color: #333;
+      background: #ddd;
+    }
+  }
+
+  template
+  {
+    <div class="mask"></div>
+
+    <div class="modal">
+      <h2>Add Item</h2>
+      <p>TODO</p>
+      <div>
+        <button fx-click="ok">Ok</button>
+        <button fx-click="close">Cancel</button>
+      </div>
+    </div>
   }
 }
