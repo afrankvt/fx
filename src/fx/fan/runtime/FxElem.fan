@@ -117,17 +117,26 @@ isComp := child.attr("fx-comp") != null
       }
 
       // super primitive to get basic list looping working...
-      (data[prop] as List).each |item,i|
+      List list := data[prop]
+      if (list.isEmpty)
       {
-        data[var] = item
-        if (ivar != null) data[ivar] = i
+        // remove template if list is emty
+        parent.remove(child)
+      }
+      else
+      {
+        list.each |item,i|
+        {
+          data[var] = item
+          if (ivar != null) data[ivar] = i
 
-        clone := child.clone
-        clone.removeAttr("fx-for")
-        clone.children.each |k| { render(k, data) }
+          clone := child.clone
+          clone.removeAttr("fx-for")
+          clone.children.each |k| { render(k, data) }
 
-        if (i == 0) parent.replace(child, clone)
-        else parent.add(clone)
+          if (i == 0) parent.replace(child, clone)
+          else parent.add(clone)
+        }
       }
       return
     }
