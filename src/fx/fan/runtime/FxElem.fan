@@ -32,7 +32,7 @@ using dom
     //if (comp->__dirty == false) return
 
     data := comp.__data
-    Log.get("fx").info("${comp}.update { $data }")
+//    Log.get("fx").info("${comp}.update { $data }")
 
     // TODO: holy moly how should this work
     // update dom
@@ -73,6 +73,7 @@ using dom
     {
       child.onEvent("click", false)
       {
+        this.children.each |k| { this.pullForms(k) }
         this.comp->__update(val)
         this.update
       }
@@ -184,6 +185,24 @@ isComp := child.attr("fx-comp") != null
 
     // child.children.each |k| { render(k, data) }
     if (!isComp) child.children.each |k| { render(k, data) }
+  }
+
+  ** Pull form values from inputs back into data array.
+  private Void pullForms(Elem elem)
+  {
+    // short-circut if we reach a sub-comp
+    if (elem.attr("fx-comp") != null) return
+
+    // TODO!!!
+    form := elem.attr("fx-form")
+    if (elem.tagName == "input" && form != null)
+    {
+      this.comp.__setData(form, elem->value)
+    }
+    else
+    {
+      elem.children.each |k| { pullForms(k) }
+    }
   }
 
   ** Resolve a variable to a data value.

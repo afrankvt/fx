@@ -31,6 +31,18 @@ using dom
     return data
   }
 
+  ** Set a field value.
+  internal Void __setData(Str name, Obj val)
+  {
+    f := typeof.field(name, false)
+    if (f == null) return
+
+    // TODO: util to coerce types...
+    if (f.type == Float#) val = Float.fromStr(val)
+
+    f.set(this, val)
+  }
+
   ** Delegate extern getter to parent.
   protected Obj? __getExtern(Str name) { __parent.typeof.field(name).get(__parent) }
 

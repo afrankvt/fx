@@ -7,6 +7,9 @@ struct Widget
   Str name
   Float price
   Bool selected
+
+  // computed struct props?
+  // Float priceDisplay() { price.toLocale("#.00") }
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -46,7 +49,7 @@ comp InventoryMgr
     <InventoryContent />
 
     // modals
-    <AddItemModal fx-if="showAddItem" fx-bind:showAddItem />
+    <AddItemModal fx-if="showAddItem" fx-bind:flash fx-bind:showAddItem />
   }
 }
 
@@ -191,12 +194,24 @@ comp AddItemModal
   {
     extern Widget[] items
     extern Bool showAddItem
+    extern Str flash
+    Str name
+    Float price
   }
 
   update(Str msg)
   {
-    if (msg == "ok")    { showAddItem=false; return }
-    if (msg == "close") { showAddItem=false; return }
+    if (msg == "ok")
+    {
+      items.add(Widget { it.name=this.name; it.price=this.price })
+      flash = "Item added ${this.name}"
+      showAddItem = false
+    }
+
+    if (msg == "close")
+    {
+      showAddItem = false
+    }
   }
 
   style
@@ -219,12 +234,19 @@ comp AddItemModal
       background: #fff;
       border: 1px solid #ccc;
       box-shadow: #777 0px 6px 16px;
-      width: 400px;
     }
 
     & h2 { margin: 0; }
 
     & div.modal div:last-child { text-align: right; }
+
+    & label { display: inline-block; min-width: 90px; }
+    & input[type=text] {
+      border: 1px solid #bbb;
+      padding: 6px;
+      font-face: inherit;
+      font-size: 100%;
+    }
 
     & button {
       font-size: 100%;
@@ -247,7 +269,14 @@ comp AddItemModal
 
     <div class="modal">
       <h2>Add Item</h2>
-      <p>TODO</p>
+      <p>
+        <label>Item Name:</label>
+        <input fx-form="name" type="text" size="40" autofocus />
+      </p>
+      <p>
+        <label>Item Price:</label>
+        <input fx-form="price" type="text" size="20" />
+      </p>
       <div>
         <button fx-click="ok">Ok</button>
         <button fx-click="close">Cancel</button>
