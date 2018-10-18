@@ -12,6 +12,15 @@ struct Widget
   // Float priceDisplay() { price.toLocale("#.00") }
 }
 
+// // "global" style block?
+// style
+// {
+//   // LESS-style nested rules where we can use comp.name === div[fx-comp="xxx"]
+//   InventoryToolbar
+//   {
+//   }
+// }
+
 //////////////////////////////////////////////////////////////////////////
 // InventoryMgr
 //////////////////////////////////////////////////////////////////////////
@@ -39,7 +48,6 @@ comp InventoryMgr
 
   template
   {
-    // TODO: close button to remove flash banner
     <div fx-if="flash" class="flash">
       {{flash}}
       <span fx-click="dismiss-flash" class="close">X</span>
