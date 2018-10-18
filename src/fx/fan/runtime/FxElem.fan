@@ -27,18 +27,16 @@ using dom
   ** Init component if 'init' message was specified.
   Void init()
   {
-    msg := comp.__init
+    msg := this.comp.__init
     if (msg != null)
     {
-      comp->__update(msg)
-      this.update
+      this.comp->__update(msg)
+      this.render
     }
   }
 
-  ** TODO:  this term is super confusing with Comp.update -- rename
-  **        to something else -> render?
-
-  Void update()
+  ** Render component based on current state.
+  Void render()
   {
     // short-circuit if not modified
 // TODO: how does this work for things like modifiying lists?
@@ -53,7 +51,7 @@ using dom
     comp.__elems.each |kid|
     {
       this.add(kid)
-      render(kid, data)
+      renderChild(kid, data)
     }
 
     // TODO -- not sure how this works; but as things stand
@@ -69,7 +67,7 @@ using dom
     p := parent
     while (p != null)
     {
-      if (p is FxElem) ((FxElem)p).update
+      if (p is FxElem) ((FxElem)p).render
       p = p.parent
     }
   }
@@ -88,7 +86,7 @@ using dom
       {
         this.children.each |k| { this.pullForms(k) }
         this.comp->__update(val)
-        this.update
+        this.render
       }
     }
 
@@ -105,7 +103,7 @@ using dom
   //
 
   ** Walk elements updating templates.
-  private Void render(Elem child, Str:Obj data)
+  private Void renderChild(Elem child, Str:Obj data)
   {
     // stop if we reach a sub-comp
 //    if (child.attr("fx-comp") != null) return
@@ -146,7 +144,7 @@ isComp := child.attr("fx-comp") != null
 
           clone := child.clone
           clone.removeAttr("fx-for")
-          clone.children.each |k| { render(k, data) }
+          clone.children.each |k| { renderChild(k, data) }
 
           if (i == 0) parent.replace(child, clone)
           else parent.add(clone)
@@ -196,8 +194,8 @@ isComp := child.attr("fx-comp") != null
     if (x != null && x.contains("select {{index}}"))
       child.setAttr("fx-click", x.replace("{{index}}", data["index"]?.toStr ?: ""))
 
-    // child.children.each |k| { render(k, data) }
-    if (!isComp) child.children.each |k| { render(k, data) }
+    // child.children.each |k| { renderChild(k, data) }
+    if (!isComp) child.children.each |k| { renderChild(k, data) }
   }
 
   ** Pull form values from inputs back into data array.
