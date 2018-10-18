@@ -77,7 +77,8 @@ abstract class BuildFxPod : BuildPod
         out.printLine(line)
       }
     }
-    // TODO: timezones...
+
+    // include entire tzdb to keep things simple (15k gziped)
     tz := Env.cur.findAllFiles(`etc/sys/tz.js`).first
     out.print(tz.readAllStr)
     out.sync.close
