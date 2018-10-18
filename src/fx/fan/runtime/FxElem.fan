@@ -99,7 +99,7 @@ using dom
   //
 
   ** Walk elements updating templates.
-  private Void renderChild(Elem child, Str:Obj data)
+  private Void renderChild(Elem child, Str:Obj? data)
   {
     // stop if we reach a sub-comp
 //    if (child.attr("fx-comp") != null) return
@@ -213,7 +213,7 @@ isComp := child.attr("fx-comp") != null
   }
 
   ** Resolve a variable to a data value.
-  private Obj? resolveVar(Str var, Str:Obj data)
+  private Obj? resolveVar(Str var, Str:Obj? data)
   {
     path := var.split('.')
     val  := data[path.first]

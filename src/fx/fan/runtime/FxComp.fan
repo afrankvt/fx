@@ -34,9 +34,9 @@ using dom
   protected virtual Elem[] __elems() { Elem#.emptyList }
 
   ** Get data map based on current state.
-  internal Str:Obj __data()
+  internal Str:Obj? __data()
   {
-    data := Str:Obj[:]
+    data := Str:Obj?[:]
     typeof.fields.each |f|
     {
       if (!f.name.startsWith("__"))

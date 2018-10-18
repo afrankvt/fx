@@ -68,6 +68,11 @@ abstract class BuildFxPod : BuildPod
     // write out fx.js
     out  := fxJs.out
     deps := ["sys", "concurrent", "graphics", "web", "dom", "fx"]
+
+// TODO FIXIT: make this dynamic based on 'usings' -- does get it added here or
+//             as part of pod.js output?
+deps.add("util").add("xml")
+
     deps.each |pod|
     {
       Pod.find("${pod}").file(`/${pod}.js`).readAllLines.each |line|
