@@ -25,7 +25,7 @@ using dom
     ts := Duration.now
 
     comps := Win.cur.doc.querySelectorAllType("[fx-comp]", FxElem#)
-    comps.each |FxElem c| { c.mount; c.update }
+    comps.each |FxElem c| { c.mount; c.update; c.init }
     // echo(comps)
 
     dur := (Duration.now - ts).toMillis

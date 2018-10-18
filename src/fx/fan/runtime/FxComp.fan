@@ -14,6 +14,8 @@ using dom
 @NoDoc @Js abstract class FxComp
 {
 
+  protected virtual Obj? __init() { null }
+
   // do not define an _update method so subclasses can parameterize args
   // virtual Void __update(...) {}
 

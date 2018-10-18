@@ -74,6 +74,16 @@ class FxFanWriter
       }
     }
 
+    // init
+    init := comp.init.msg.trimToNull
+    if (init != null)
+    {
+      out.printLine("  protected override Obj? __init()")
+      out.printLine("  {")
+      out.printLine("    return ${init}")
+      out.printLine("  }")
+    }
+
     // update
     out.printLine("  Void __update(${comp.update.argType} ${comp.update.argName})")
     out.printLine("  {")

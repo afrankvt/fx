@@ -143,6 +143,7 @@ internal class FxParser
   private FxNode parseComp()
   {
     FxDataDef? data
+    FxInitDef? init
     FxUpdateDef? update
     FxStyleDef? style
     FxTemplateDef? template
@@ -156,6 +157,7 @@ internal class FxParser
       if (token.isKeyword)
       {
         if (token.val == "data")     { data     = parseData;     token=nextToken; continue }
+        if (token.val == "init")     { init     = parseInit;     token=nextToken; continue }
         if (token.val == "update")   { update   = parseUpdate;   token=nextToken; continue }
         if (token.val == "style")    { style    = parseStyle;    token=nextToken; continue }
         if (token.val == "template") { template = parseTemplate; token=nextToken; continue }
@@ -169,6 +171,7 @@ internal class FxParser
       it.qname    = "${podName}::$name"
       it.name     = name
       it.data     = data     ?: FxDataDef {}
+      it.init     = init     ?: FxInitDef {}
       it.update   = update   ?: FxUpdateDef {}
       it.style    = style    ?: FxStyleDef {}
       it.template = template ?: FxTemplateDef {}
@@ -205,6 +208,13 @@ internal class FxParser
     }
 
     return FxDataDef { it.props=props }
+  }
+
+  ** Parse a 'init' definition block.
+  private FxNode parseInit()
+  {
+    msg := parseRawBlock
+    return FxInitDef { it.msg=msg }
   }
 
   ** Parse a 'update' definition block.
@@ -379,7 +389,7 @@ internal class FxParser
   ])
 
   private static const Str:Str keywords := [:].setList([
-    "using", "struct", "comp", "data", "extern", "update", "style", "template"
+    "using", "struct", "comp", "data", "extern", "init", "update", "style", "template"
   ])
 
 //////////////////////////////////////////////////////////////////////////

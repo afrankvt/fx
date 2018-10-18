@@ -63,6 +63,7 @@ const class FxCompDef : FxNode
   const Str qname
   const Str name
   const FxDataDef data
+  const FxInitDef init
   const FxUpdateDef update
   const FxStyleDef style
   const FxTemplateDef template
@@ -128,6 +129,25 @@ const class FxDataDef : FxNode
     echo("  data")
     echo("  {")
     props.each |p| { Env.cur.out.print("  "); p.dump }
+    echo("  }")
+  }
+}
+
+*************************************************************************
+** FxInitDef
+*************************************************************************
+
+const class FxInitDef : FxNode
+{
+  new make(|This| f) { f(this) }
+
+  const Str msg := ""  // message expression
+
+  override Void dump()
+  {
+    echo("  init")
+    echo("  {")
+    echo("    $msg")
     echo("  }")
   }
 }

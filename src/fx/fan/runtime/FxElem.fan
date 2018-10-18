@@ -24,7 +24,20 @@ using dom
     this.addAll(comp->__elems)
   }
 
-  ** TODO
+  ** Init component if 'init' message was specified.
+  Void init()
+  {
+    msg := comp.__init
+    if (msg != null)
+    {
+      comp->__update(msg)
+      this.update
+    }
+  }
+
+  ** TODO:  this term is super confusing with Comp.update -- rename
+  **        to something else -> render?
+
   Void update()
   {
     // short-circuit if not modified
