@@ -13,8 +13,20 @@ using dom
 **
 @NoDoc @Js abstract class FxComp
 {
-
   protected virtual Obj? __init() { null }
+
+  protected Void update(Obj? msg, Duration? timeout := null)
+  {
+    if (timeout == null)
+    {
+      this->__update(msg)
+      __elem?.render
+    }
+    else
+    {
+      Win.cur.setTimeout(timeout) { update(msg, null) }
+    }
+  }
 
   // do not define an _update method so subclasses can parameterize args
   // virtual Void __update(...) {}
@@ -51,7 +63,8 @@ using dom
   ** Delegate extern setter to parent.
   protected Void __setExtern(Str name, Obj val) { __parent.typeof.field(name).set(__parent, val) }
 
-  FxComp? __parent := null            // parent instance for sub-comps
+  internal FxComp? __parent := null   // parent instance for sub-comps
+  internal FxElem? __elem   := null   // bound FxElem instance
   protected Str:Str __externs := [:]  // self:parent extern field name map
   protected Bool __dirty := false     // TODO
 }

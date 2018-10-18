@@ -22,17 +22,14 @@ using dom
     this.type = Type.find(this.attr("fx-comp"))
     this.comp = type.make
     this.addAll(comp->__elems)
+    this.comp.__elem = this
   }
 
   ** Init component if 'init' message was specified.
   Void init()
   {
     msg := this.comp.__init
-    if (msg != null)
-    {
-      this.comp->__update(msg)
-      this.render
-    }
+    if (msg != null) this.comp.update(msg)
   }
 
   ** Render component based on current state.
@@ -85,8 +82,7 @@ using dom
       child.onEvent("click", false)
       {
         this.children.each |k| { this.pullForms(k) }
-        this.comp->__update(val)
-        this.render
+        this.comp.update(val)
       }
     }
 
