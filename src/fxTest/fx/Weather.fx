@@ -9,13 +9,27 @@ comp Weather
     Str wxStatus
     Str wxStationInfo
     DomCoord? geo
-    Str? stationId
     Err? err
   }
 
   init
   {
     "geoloc"
+  }
+
+  style
+  {
+    @keyframes pulse {
+      0%   { transform: scale(1);    }
+      50%  { transform: scale(1.02); }
+      100% { transform: scale(1);    }
+    }
+
+    & .loading {
+      opacity: 0.3;
+      transform-origin: center left;
+      animation: pulse 1s linear infinite;
+    }
   }
 
   update(Obj msg)
@@ -33,10 +47,8 @@ comp Weather
       geo = msg
       geoStatus = "You are at $geo.lat, $geo.lng"
       wxStatus  = "Loading weather data..."
-      update("wxload")
-    }
-    else if (msg == "wxload")
-    {
+      update("")
+
       sreq := HttpReq {}
       sreq.uri = `https://api.weather.gov/points/${geo.lat.toInt},${geo.lng.toInt}`
       sreq.get |sres|
@@ -72,8 +84,8 @@ comp Weather
   template
   {
     <h2 fx-if="err" style="color:#e74c3c">{{err.msg}}</h2>
-    <h2>{{geoStatus}}</h2>
-    <h2>{{wxStatus}}</h2>
+    <h2 fx-ifnot:class:loading="geo">{{geoStatus}}</h2>
+    <h2 fx-ifnot:class:loading="wxStationInfo">{{wxStatus}}</h2>
     <p>{{wxStationInfo}}</p>
   }
 }

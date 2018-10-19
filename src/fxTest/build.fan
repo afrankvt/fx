@@ -18,8 +18,8 @@ class Build : fx::BuildFxPod
     ]
     depends = [
       "sys 1.0",
-      "compiler 1.0",
       "util 1.0",
+      "concurrent 1.0",
       "xml 1.0",
       "graphics 1.0",
       "web 1.0",
