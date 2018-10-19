@@ -163,16 +163,23 @@ isComp := child.attr("fx-comp") != null
         val := data[var]
         if (!isTruthy(val)) { child.parent.remove(child); return }
       }
+      else if (child.attr("fx-ifnot") != null)
+      {
+        var := child.attr("fx-ifnot")
+        val := data[var]
+        if (isTruthy(val)) { child.parent.remove(child); return }
+      }
       else
       {
         // attr level
         // TODO: not sure how this should work?
+        not := attr.startsWith("fx-ifnot:")
         var := child.attr(attr)
         if (attr.contains(":class:"))
         {
-          cname := attr["fx-if:class:".size..-1]
+          cname := attr[(not ? "fx-ifnot:class:" : "fx-if:class:").size..-1]
           val   := resolveVar(var, data)
-          child.style.toggleClass(cname, isTruthy(val))
+          child.style.toggleClass(cname, not ? !isTruthy(val) : isTruthy(val))
         }
       }
     }
