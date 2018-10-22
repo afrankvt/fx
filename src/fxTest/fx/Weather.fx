@@ -58,6 +58,8 @@ comp Weather
       sreq.uri = `https://api.weather.gov/points/${geo.lat.toInt},${geo.lng.toInt}`
       sreq.get |sres|
       {
+        if (sres.status != 200) return send(Err("Request faild"))
+
         Map json  := JsonInStream(sres.content.in).readJson
         Map props := json["properties"]
         Str stid  := props["radarStation"]
@@ -66,6 +68,8 @@ comp Weather
         creq.uri = `https://w1.weather.gov/xml/current_obs/display.php?stid=${stid}`
         creq.get |cres|
         {
+          if (cres.status != 200) return send(Err("Request faild"))
+
           doc  := XParser(cres.content.in).parseDoc
           stat := doc.root.elem("station_id").text.val
           loc  := doc.root.elem("location").text.val
