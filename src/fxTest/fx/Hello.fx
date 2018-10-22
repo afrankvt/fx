@@ -5,12 +5,6 @@ comp HelloWorld
     Int count
   }
 
-  update(Str msg)
-  {
-    if (msg == "inc") count++
-    else if (msg == "dec") count--
-  }
-
   template
   {
     // TODO: fix whitespace handling for text nodes :)
@@ -19,5 +13,11 @@ comp HelloWorld
       <button fx-click="dec">--</button>
       <button fx-click="inc">++</button>
     </p>
+  }
+
+  onMsg(Str msg)
+  {
+    if (msg == "inc") count++
+    else if (msg == "dec") count--
   }
 }

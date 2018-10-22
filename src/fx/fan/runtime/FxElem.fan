@@ -29,7 +29,7 @@ using dom
   Void init()
   {
     msg := this.comp.__init
-    if (msg != null) this.comp.update(msg)
+    if (msg != null) this.comp.send(msg)
   }
 
   ** Render component based on current state.
@@ -82,7 +82,7 @@ using dom
       child.onEvent("click", false)
       {
         this.children.each |k| { this.pullForms(k) }
-        this.comp.update(val)
+        this.comp.send(val)
       }
     }
 

@@ -34,11 +34,6 @@ comp InventoryMgr
     Bool showAddItem
   }
 
-  update(Str msg)
-  {
-    if (msg == "dismiss-flash") flash = ""
-  }
-
   style
   {
     & div.flash { background: #27ae60; color: #fff; padding: 10px; }
@@ -59,6 +54,11 @@ comp InventoryMgr
     // modals
     <AddItemModal fx-if="showAddItem" fx-bind:flash fx-bind:showAddItem />
   }
+
+  onMsg(Str msg)
+  {
+    if (msg == "dismiss-flash") flash = ""
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -70,11 +70,6 @@ comp InventoryToolbar
   data
   {
     extern Bool showAddItem
-  }
-
-  update(Str msg)
-  {
-    if (msg == "new") showAddItem = true
   }
 
   style
@@ -99,6 +94,11 @@ comp InventoryToolbar
   {
     <button fx-click="new">New Widget</button>
   }
+
+  onMsg(Str msg)
+  {
+    if (msg == "new") showAddItem = true
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -110,15 +110,6 @@ comp InventorySidebar
   data
   {
     extern Widget[] items
-  }
-
-  update(Str msg)
-  {
-    if (msg.startsWith("select"))
-    {
-      index := msg.split.last.toInt
-      items.each |item,i| { item.selected = i == index }
-    }
   }
 
   style
@@ -159,6 +150,15 @@ comp InventorySidebar
       </div>
     </div>
   }
+
+  onMsg(Str msg)
+  {
+    if (msg.startsWith("select"))
+    {
+      index := msg.split.last.toInt
+      items.each |item,i| { item.selected = i == index }
+    }
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -168,10 +168,6 @@ comp InventorySidebar
 comp InventoryContent
 {
   data
-  {
-  }
-
-  update(Str msg)
   {
   }
 
@@ -190,6 +186,10 @@ comp InventoryContent
   {
     <div>TODO</div>
   }
+
+  onMsg(Str msg)
+  {
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -205,21 +205,6 @@ comp AddItemModal
     extern Str flash
     Str name
     Float price
-  }
-
-  update(Str msg)
-  {
-    if (msg == "ok")
-    {
-      items.add(Widget { it.name=this.name; it.price=this.price })
-      flash = "Item added ${this.name}"
-      showAddItem = false
-    }
-
-    if (msg == "close")
-    {
-      showAddItem = false
-    }
   }
 
   style
@@ -290,5 +275,20 @@ comp AddItemModal
         <button fx-click="close">Cancel</button>
       </div>
     </div>
+  }
+
+  onMsg(Str msg)
+  {
+    if (msg == "ok")
+    {
+      items.add(Widget { it.name=this.name; it.price=this.price })
+      flash = "Item added ${this.name}"
+      showAddItem = false
+    }
+
+    if (msg == "close")
+    {
+      showAddItem = false
+    }
   }
 }

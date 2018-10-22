@@ -64,17 +64,17 @@ const class FxCompDef : FxNode
   const Str name
   const FxDataDef data
   const FxInitDef init
-  const FxUpdateDef update
   const FxStyleDef style
   const FxTemplateDef template
+  const FxMsgDef msg
 
   override Void dump()
   {
     echo("comp $qname")
     echo("{")
     data.dump
-    update.dump
     template.dump
+    msg.dump
     echo("}")
   }
 }
@@ -153,10 +153,10 @@ const class FxInitDef : FxNode
 }
 
 *************************************************************************
-** FxUpdateDef
+** FxMsgDef
 *************************************************************************
 
-const class FxUpdateDef : FxNode
+const class FxMsgDef : FxNode
 {
   new make(|This| f) { f(this) }
 
@@ -166,7 +166,7 @@ const class FxUpdateDef : FxNode
 
   override Void dump()
   {
-    echo("  update($argType $argName)")
+    echo("  onMsg($argType $argName)")
     echo("  {")
     funcBody.splitLines.each |s|
     {

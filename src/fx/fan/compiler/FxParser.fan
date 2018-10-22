@@ -144,9 +144,9 @@ internal class FxParser
   {
     FxDataDef? data
     FxInitDef? init
-    FxUpdateDef? update
     FxStyleDef? style
     FxTemplateDef? template
+    FxMsgDef? msg
 
     name := nextToken(TokenType.typeName).val
 
@@ -158,9 +158,9 @@ internal class FxParser
       {
         if (token.val == "data")     { data     = parseData;     token=nextToken; continue }
         if (token.val == "init")     { init     = parseInit;     token=nextToken; continue }
-        if (token.val == "update")   { update   = parseUpdate;   token=nextToken; continue }
         if (token.val == "style")    { style    = parseStyle;    token=nextToken; continue }
         if (token.val == "template") { template = parseTemplate; token=nextToken; continue }
+        if (token.val == "onMsg")    { msg      = parseMsg;      token=nextToken; continue }
         throw parseErr("Invalid keyword '$token.val'")
       }
       throw unexpectedToken(token)
@@ -172,9 +172,9 @@ internal class FxParser
       it.name     = name
       it.data     = data     ?: FxDataDef {}
       it.init     = init     ?: FxInitDef {}
-      it.update   = update   ?: FxUpdateDef {}
       it.style    = style    ?: FxStyleDef {}
       it.template = template ?: FxTemplateDef {}
+      it.msg      = msg      ?: FxMsgDef {}
     }
   }
 
@@ -217,26 +217,6 @@ internal class FxParser
     return FxInitDef { it.msg=msg }
   }
 
-  ** Parse a 'update' definition block.
-  private FxNode parseUpdate()
-  {
-    // method sig
-    nextToken(TokenType.parenOpen)
-    argType := nextToken(TokenType.typeName).val
-    argName := nextToken(TokenType.identifier).val
-    nextToken(TokenType.parenClose)
-
-    // method body
-    funcBody := parseRawBlock
-
-    return FxUpdateDef
-    {
-      it.argType  = argType
-      it.argName  = argName
-      it.funcBody = funcBody
-    }
-  }
-
   ** Parse a 'style' definition block.
   private FxNode parseStyle()
   {
@@ -251,6 +231,26 @@ internal class FxParser
     markup := parseRawBlock
     nodes  := FxTemplateParser(podName, filename, Buf().print(markup).flip.in, start).parse
     return FxTemplateDef { it.nodes=nodes }
+  }
+
+  ** Parse a 'msg' definition block.
+  private FxNode parseMsg()
+  {
+    // method sig
+    nextToken(TokenType.parenOpen)
+    argType := nextToken(TokenType.typeName).val
+    argName := nextToken(TokenType.identifier).val
+    nextToken(TokenType.parenClose)
+
+    // method body
+    funcBody := parseRawBlock
+
+    return FxMsgDef
+    {
+      it.argType  = argType
+      it.argName  = argName
+      it.funcBody = funcBody
+    }
   }
 
 //////////////////////////////////////////////////////////////////////////
@@ -289,7 +289,7 @@ internal class FxParser
     {
       read
       ch = read
-      while (ch != '\n' || ch == null)
+      while (ch != '\n' && ch != null)
       {
         buf.addChar(ch)
         ch = read
@@ -389,7 +389,7 @@ internal class FxParser
   ])
 
   private static const Str:Str keywords := [:].setList([
-    "using", "struct", "comp", "data", "extern", "init", "update", "style", "template"
+    "using", "struct", "comp", "data", "extern", "init", "onMsg", "style", "template"
   ])
 
 //////////////////////////////////////////////////////////////////////////

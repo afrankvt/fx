@@ -84,16 +84,6 @@ class FxFanWriter
       out.printLine("  }")
     }
 
-    // update
-    out.printLine("  Void __update(${comp.update.argType} ${comp.update.argName})")
-    out.printLine("  {")
-    comp.update.funcBody.splitLines.each |s|
-    {
-      t := s.trim
-      if (t.size > 0) out.printLine("    $t")
-    }
-    out.printLine("  }")
-
     // style
     style := StrBuf()
     scope := "[fx-comp='$comp.qname']"
@@ -113,6 +103,16 @@ class FxFanWriter
     out.printLine("    return [")
     comp.template.nodes.each |n| { writeTemplateElem(n, out, 6) }
     out.printLine("    ]")
+    out.printLine("  }")
+
+    // onMsg
+    out.printLine("  Void __onMsg(${comp.msg.argType} ${comp.msg.argName})")
+    out.printLine("  {")
+    comp.msg.funcBody.splitLines.each |s|
+    {
+      t := s.trim
+      if (t.size > 0) out.printLine("    $t")
+    }
     out.printLine("  }")
 
     out.printLine("}")

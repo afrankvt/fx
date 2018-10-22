@@ -12,10 +12,7 @@ comp Weather
     Err? err
   }
 
-  init
-  {
-    "geoloc"
-  }
+  init { "geoloc" }
 
   style
   {
@@ -32,14 +29,22 @@ comp Weather
     }
   }
 
-  update(Obj msg)
+  template
+  {
+    <h2 fx-if="err" style="color:#e74c3c">{{err.msg}}</h2>
+    <h2 fx-ifnot:class:loading="geo">{{geoStatus}}</h2>
+    <h2 fx-ifnot:class:loading="wxStationInfo">{{wxStatus}}</h2>
+    <p>{{wxStationInfo}}</p>
+  }
+
+  onMsg(Obj msg)
   {
     if (msg == "geoloc")
     {
       geoStatus = "Locating..."
       Win.cur.geoCurPosition(
-        |geo| { update(geo) },
-        |err| { update(err) }
+        |geo| { send(geo) },
+        |err| { send(err) }
       )
     }
     else if (msg is DomCoord)
@@ -47,7 +52,7 @@ comp Weather
       geo = msg
       geoStatus = "You are at $geo.lat, $geo.lng"
       wxStatus  = "Loading weather data..."
-      update("")
+      send("")
 
       sreq := HttpReq {}
       sreq.uri = `https://api.weather.gov/points/${geo.lat.toInt},${geo.lng.toInt}`
@@ -69,7 +74,7 @@ comp Weather
 
           wxStatus = "The current conditions are ${temp}\u00B0F and ${cond}"
           wxStationInfo = "${stat} \u2013 ${loc}"
-          update("")
+          send("")
         }
       }
     }
@@ -79,13 +84,5 @@ comp Weather
       geoStatus = ""
       wxStatus  = ""
     }
-  }
-
-  template
-  {
-    <h2 fx-if="err" style="color:#e74c3c">{{err.msg}}</h2>
-    <h2 fx-ifnot:class:loading="geo">{{geoStatus}}</h2>
-    <h2 fx-ifnot:class:loading="wxStationInfo">{{wxStatus}}</h2>
-    <p>{{wxStationInfo}}</p>
   }
 }

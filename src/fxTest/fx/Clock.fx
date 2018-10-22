@@ -5,19 +5,17 @@ comp Clock
     Str time
   }
 
-  init { "tick" }
+  template
+  {
+    <h2>The current time is {{time}}</h2>
+  }
 
-  update(Obj msg)
+  onMsg(Obj msg) //, init := "tick")
   {
     if (msg == "tick")
     {
       time = DateTime.now.toLocale
-      update("tick", 1sec)
+      sendLater("tick", 1sec)
     }
-  }
-
-  template
-  {
-    <h2>The current time is {{time}}</h2>
   }
 }

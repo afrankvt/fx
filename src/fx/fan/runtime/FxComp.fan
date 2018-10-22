@@ -15,21 +15,21 @@ using dom
 {
   protected virtual Obj? __init() { null }
 
-  protected Void update(Obj? msg, Duration? timeout := null)
+  ** Send a message to this componen.
+  Void send(Obj msg)
   {
-    if (timeout == null)
-    {
-      this->__update(msg)
-      __elem?.render
-    }
-    else
-    {
-      Win.cur.setTimeout(timeout) { update(msg, null) }
-    }
+    this->__onMsg(msg)
+    __elem?.render
   }
 
-  // do not define an _update method so subclasses can parameterize args
-  // virtual Void __update(...) {}
+  ** Send a message to this component after the given internval.
+  Void sendLater(Obj msg, Duration timeout)
+  {
+    Win.cur.setTimeout(timeout) { send(msg) }
+  }
+
+  // do not define an __onMsg method so subclasses can parameterize args
+  // virtual Void __onMsg(...) {}
 
   protected virtual Elem[] __elems() { Elem#.emptyList }
 
