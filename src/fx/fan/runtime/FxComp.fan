@@ -13,7 +13,10 @@ using dom
 **
 @NoDoc @Js abstract class FxComp
 {
-  protected virtual Obj? __init() { null }
+
+//////////////////////////////////////////////////////////////////////////
+// Public API
+//////////////////////////////////////////////////////////////////////////
 
   ** Send a message to this componen.
   Void send(Obj msg)
@@ -27,6 +30,12 @@ using dom
   {
     Win.cur.setTimeout(timeout) { send(msg) }
   }
+
+//////////////////////////////////////////////////////////////////////////
+// Internal API
+//////////////////////////////////////////////////////////////////////////
+
+  protected virtual Obj? __init() { null }
 
   // do not define an __onMsg method so subclasses can parameterize args
   // virtual Void __onMsg(...) {}
