@@ -226,7 +226,9 @@ isComp := child.attr("fx-comp") != null
     val  := data[path.first]
     for (i:=1; i<path.size; i++)
     {
-      val = val.typeof.field(path[i]).get(val)
+      slot := val.typeof.slot(path[i])
+      if (slot is Field) val = ((Field)slot).get(val)
+      else val = ((Method)slot).call(val)
     }
     return val
   }
