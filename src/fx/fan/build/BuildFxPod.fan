@@ -48,7 +48,7 @@ abstract class BuildFxPod : BuildPod
         ast := FxParser(podName, file.name, file.in).parse
         // ast.each |n| { n.dump }
         out := (outDir + `${file.basename}.fan`).out
-        FxFanWriter(ast).write(out)
+        FxFanWriter(podName, ast).write(out)
         out.sync.close
       }
     }

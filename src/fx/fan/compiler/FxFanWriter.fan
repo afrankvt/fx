@@ -11,8 +11,9 @@
 **
 class FxFanWriter
 {
-  new make(FxNode[] nodes)
+  new make(Str podName, FxNode[] nodes)
   {
+    this.podName = podName
     this.nodes   = nodes
     this.usings  = nodes.findType(FxUsingDef#)
     this.structs = nodes.findType(FxStructDef#)
@@ -79,8 +80,19 @@ class FxFanWriter
     scope := "[fx-comp='$comp.qname']"
     comp.style.css.splitLines.each |line|
     {
-      s := line.trim
-      if (s.size > 0) style.add(s.replace("&", scope)).addChar('\n')
+      xline := line.trim
+      if (xline.isEmpty) return
+      xline.split(' ').each |s|
+      {
+        if (s == "&") s = scope
+        else if (s[0].isUpper)
+        {
+          if (!s.contains("::")) s = "${podName}::${s}"
+          s = "[fx-comp=\"$s\"]"
+        }
+        style.add(s).addChar(' ')
+      }
+      style.addChar('\n')
     }
     out.printLine("  static")
     out.printLine("  {")
@@ -182,6 +194,7 @@ class FxFanWriter
     }
   }
 
+  const Str podName
   const FxNode[] nodes
   const FxUsingDef[] usings
   const FxStructDef[] structs
