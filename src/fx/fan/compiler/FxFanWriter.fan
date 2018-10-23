@@ -74,16 +74,6 @@ class FxFanWriter
       }
     }
 
-    // init
-    init := comp.init.msg.trimToNull
-    if (init != null)
-    {
-      out.printLine("  protected override Obj? __init()")
-      out.printLine("  {")
-      out.printLine("    return ${init}")
-      out.printLine("  }")
-    }
-
     // style
     style := StrBuf()
     scope := "[fx-comp='$comp.qname']"
@@ -105,6 +95,16 @@ class FxFanWriter
     out.printLine("    ]")
     out.printLine("  }")
 
+    // init
+    init := comp.init.msg.trimToNull
+    if (init != null)
+    {
+      out.printLine("  protected override Obj? __init()")
+      out.printLine("  {")
+      out.printLine("    return ${init}")
+      out.printLine("  }")
+    }
+
     // onMsg
     out.printLine("  Void __onMsg(${comp.msg.argType} ${comp.msg.argName})")
     out.printLine("  {")
@@ -115,6 +115,20 @@ class FxFanWriter
     }
     out.printLine("  }")
 
+    // funcs
+    comp.funcs.each |f|
+    {
+      out.printLine("  ${f.retType} ${f.funcName}()")
+      out.printLine("  {")
+      f.funcBody.splitLines.each |s|
+      {
+        t := s.trim
+        if (t.size > 0) out.printLine("    $t")
+      }
+      out.printLine("  }")
+    }
+
+    // end class
     out.printLine("}")
   }
 

@@ -18,4 +18,8 @@ comp Clock
       sendLater("tick", 1sec)
     }
   }
+
+  Void test()
+  {
+  }
 }

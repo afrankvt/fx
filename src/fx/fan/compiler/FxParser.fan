@@ -152,6 +152,7 @@ internal class FxParser
     FxStyleDef? style
     FxTemplateDef? template
     FxMsgDef? msg
+    FxFuncDef[] funcs := [,]
 
     name := nextToken(TokenType.typeName).val
 
@@ -168,6 +169,7 @@ internal class FxParser
         if (token.val == "onMsg")    { msg      = parseMsg;      token=nextToken; continue }
         throw parseErr("Invalid keyword '$token.val'")
       }
+      if (token.isTypeName) { funcs.add(parseFunc(token)); token=nextToken; continue }
       throw unexpectedToken(token)
     }
 
@@ -180,6 +182,7 @@ internal class FxParser
       it.style    = style    ?: FxStyleDef {}
       it.template = template ?: FxTemplateDef {}
       it.msg      = msg      ?: FxMsgDef {}
+      it.funcs    = funcs
     }
   }
 
@@ -259,6 +262,29 @@ internal class FxParser
     {
       it.argType  = argType
       it.argName  = argName
+      it.funcBody = funcBody
+    }
+  }
+
+  ** Parse a 'func' definition block.
+  private FxNode parseFunc(Token token)
+  {
+    // method sig
+    retType  := token.val
+    funcName := nextToken(TokenType.identifier).val
+    nextToken(TokenType.parenOpen)
+    // TODO
+    // argType := nextToken(TokenType.typeName).val
+    // argName := nextToken(TokenType.identifier).val
+    nextToken(TokenType.parenClose)
+
+    // method body
+    funcBody := parseRawBlock
+
+    return FxFuncDef
+    {
+      it.retType  = retType
+      it.funcName = funcName
       it.funcBody = funcBody
     }
   }
