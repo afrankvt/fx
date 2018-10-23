@@ -118,11 +118,16 @@ internal class FxParser
     {
       if (token.isTypeName)
       {
-        ptype := token.val
-        pname := nextToken(TokenType.identifier).val
-        // TODO: defVal
+        ptype  := token.val
+        pname  := nextToken(TokenType.identifier).val
+        defVal := null
         token = nextToken
-        props.add(FxPropDef { it.extern=false; it.type=ptype; it.name=pname })
+        if (token.val == ":=")
+        {
+          defVal = parseToEol
+          token  = nextToken
+        }
+        props.add(FxPropDef { it.extern=false; it.type=ptype; it.name=pname; it.defVal=defVal })
       }
       else throw unexpectedToken(token)
     }
@@ -198,11 +203,16 @@ internal class FxParser
       // then parse property def
       if (token.isTypeName)
       {
-        ptype := token.val
-        pname := nextToken(TokenType.identifier).val
-        // TODO: defVal
+        ptype  := token.val
+        pname  := nextToken(TokenType.identifier).val
+        defVal := null
         token = nextToken
-        props.add(FxPropDef { it.extern=extern; it.type=ptype; it.name=pname })
+        if (token.val == ":=")
+        {
+          defVal = parseToEol
+          token  = nextToken
+        }
+        props.add(FxPropDef { it.extern=extern; it.type=ptype; it.name=pname; it.defVal=defVal })
       }
       else throw unexpectedToken(token)
     }
@@ -329,7 +339,7 @@ internal class FxParser
     if (ch == ')') return Token(TokenType.parenClose, ch.toChar)
 
     // operators
-    if (ch == ':' && peek == '=') return Token(TokenType.assign, ":=")
+    if (ch == ':' && peek == '=') { read; return Token(TokenType.assign, ":=") }
 
     throw parseErr("Invalid char 0x${ch.toHex} ($ch.toChar)")
   }
@@ -356,6 +366,20 @@ internal class FxParser
     }
 
     if (ch != '}') throw unexpectedToken(Token(TokenType.braceClose, "}"))
+    return buf.toStr
+  }
+
+  ** Parse till end of line.
+  private Str parseToEol()
+  {
+    // TODO: cheap temp hack until we can parse Fantom defVal statements
+    buf.clear
+    Int? ch
+    while (peek != '\n' && peek != null)
+    {
+      ch = read
+      buf.addChar(ch)
+    }
     return buf.toStr
   }
 

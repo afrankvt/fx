@@ -33,7 +33,7 @@ using dom
   }
 
   ** Create a new FX element dom node.
-  static Elem elem(Obj parentComp, Str qname, Str:Str attrs)
+  static Elem elem(Obj? parentComp, Str qname, Str:Str attrs)
   {
     elem := FxElem { it.setAttr("fx-comp", qname) }
     elem.mount
