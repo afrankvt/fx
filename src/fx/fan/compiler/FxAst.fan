@@ -193,12 +193,13 @@ const class FxFuncDef : FxNode
 
   const Str retType         // return type
   const Str funcName        // function name
-  // TODO: args
+  const Str[] funcArgs      // function args ["Type argname", ...]
   const Str funcBody := ""  // fantom source func body
 
   override Void dump()
   {
-    echo("  ${retType} ${funcName}()")
+    args := funcArgs.join(", ")
+    echo("  ${retType} ${funcName}($args)")
     echo("  {")
     funcBody.splitLines.each |s|
     {

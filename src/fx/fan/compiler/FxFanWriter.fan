@@ -118,7 +118,8 @@ class FxFanWriter
     // funcs
     comp.funcs.each |f|
     {
-      out.printLine("  ${f.retType} ${f.funcName}()")
+      args := f.funcArgs.join(", ")
+      out.printLine("  ${f.retType} ${f.funcName}($args)")
       out.printLine("  {")
       f.funcBody.splitLines.each |s|
       {

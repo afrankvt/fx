@@ -272,11 +272,16 @@ internal class FxParser
     // method sig
     retType  := token.val
     funcName := nextToken(TokenType.identifier).val
-    nextToken(TokenType.parenOpen)
-    // TODO
-    // argType := nextToken(TokenType.typeName).val
-    // argName := nextToken(TokenType.identifier).val
-    nextToken(TokenType.parenClose)
+    funcArgs := Str[,]
+    token = nextToken(TokenType.parenOpen)
+    token = nextToken
+    while (!token.isParenClose)
+    {
+      argType := token.val
+      argName := nextToken(TokenType.identifier).val
+      funcArgs.add("$argType $argName")
+      token = nextToken
+    }
 
     // method body
     funcBody := parseRawBlock
@@ -285,6 +290,7 @@ internal class FxParser
     {
       it.retType  = retType
       it.funcName = funcName
+      it.funcArgs = funcArgs
       it.funcBody = funcBody
     }
   }
