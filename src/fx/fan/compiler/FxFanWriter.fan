@@ -84,6 +84,7 @@ class FxFanWriter
       if (xline.isEmpty) return
       xline.split(' ').each |s|
       {
+        if (s.size == 0) return
         if (s == "&") s = scope
         else if (s[0].isUpper)
         {
