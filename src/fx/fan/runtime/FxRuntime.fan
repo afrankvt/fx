@@ -49,6 +49,7 @@ using dom
     //   }
     // }
     elem.render
+    elem.init
     return elem
   }
 
