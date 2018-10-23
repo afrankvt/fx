@@ -41,7 +41,7 @@ class FxFanWriter
     struct.props.each |p|
     {
       out.print("  $p.type $p.name")
-      // if (p.defVal != null) out.print(" := $p.defVal")
+      if (p.defVal != null) out.print(" := $p.defVal")
       out.printLine("")
     }
     out.printLine("  override Str toStr() { FxRuntime.structToStr(this) }")
