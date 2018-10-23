@@ -154,33 +154,49 @@ isComp := child.attr("fx-comp") != null
     for (i:=0; i<attrs.size; i++)
     {
       attr := attrs[i]
-      if (!attr.startsWith("fx-if")) continue
 
-      // node level
-      if (child.attr("fx-if") != null)
+      if (attr.startsWith("fx-if"))
       {
-        var := child.attr("fx-if")
-        val := data[var]
-        if (!isTruthy(val)) { child.parent.remove(child); return }
-      }
-      else if (child.attr("fx-ifnot") != null)
-      {
-        var := child.attr("fx-ifnot")
-        val := data[var]
-        if (isTruthy(val)) { child.parent.remove(child); return }
+        // node level
+        if (child.attr("fx-if") != null)
+        {
+          var := child.attr("fx-if")
+          val := data[var]
+          if (!isTruthy(val)) { child.parent.remove(child); return }
+        }
+        else if (child.attr("fx-ifnot") != null)
+        {
+          var := child.attr("fx-ifnot")
+          val := data[var]
+          if (isTruthy(val)) { child.parent.remove(child); return }
+        }
+        else
+        {
+          // attr level
+          // TODO: not sure how this should work?
+          not := attr.startsWith("fx-ifnot:")
+          var := child.attr(attr)
+          if (attr.contains(":class:"))
+          {
+            cname := attr[(not ? "fx-ifnot:class:" : "fx-if:class:").size..-1]
+            val   := resolveVar(var, data)
+            child.style.toggleClass(cname, not ? !isTruthy(val) : isTruthy(val))
+          }
+        }
       }
       else
       {
-        // attr level
-        // TODO: not sure how this should work?
-        not := attr.startsWith("fx-ifnot:")
+        // TODO: yikes
+
         var := child.attr(attr)
-        if (attr.contains(":class:"))
-        {
-          cname := attr[(not ? "fx-ifnot:class:" : "fx-if:class:").size..-1]
-          val   := resolveVar(var, data)
-          child.style.toggleClass(cname, not ? !isTruthy(val) : isTruthy(val))
-        }
+        six := var.index("{{")
+        eix := var.index("}}")
+        if (six == null || eix == null) continue
+
+        name := var[(six+2)..<eix]
+        val  := resolveVar(name, data) ?: ""
+        child.setAttr(attr, var.replace("{{$name}}", val))
+        echo("$attr => [$name] $var --> " + var.replace("{{$name}}", val))
       }
     }
 
