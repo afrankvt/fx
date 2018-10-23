@@ -32,7 +32,7 @@ abstract class BuildFxPod : BuildPod
     compileFx(fxTempDir)
 
     // add temp dir to srcDir list and compileFan
-    srcDirs.add(`__fxtmp/`)
+    if (fxTempDir.exists) srcDirs.add(`__fxtmp/`)
     super.compileFan
   }
 
