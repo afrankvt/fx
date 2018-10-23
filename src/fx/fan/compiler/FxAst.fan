@@ -98,10 +98,8 @@ const class FxPropDef : FxNode
     {
       if (type.endsWith("[]")) defVal = "[,]"
       // TODO: maps
+      if (type == "Str") defVal = "\"\""
     }
-
-    // TODO
-    if (type == "Str") defVal = "\"\""
   }
 
   const Bool extern   // is extern (data.props only)
