@@ -45,11 +45,21 @@ abstract class BuildFxPod : BuildPod
       (scriptDir + dir).listFiles.each |file|
       {
         if (file.ext != "fx") return
-        ast := FxParser(podName, file.name, file.in).parse
-        // ast.each |n| { n.dump }
-        out := (outDir + `${file.basename}.fan`).out
-        FxFanWriter(podName, ast).write(out)
-        out.sync.close
+        try
+        {
+          ast := FxParser(podName, file.name, file.in).parse
+          // ast.each |n| { n.dump }
+          FxChecker(ast).run
+          out := (outDir + `${file.basename}.fan`).out
+          FxFanWriter(podName, ast).write(out)
+          out.sync.close
+        }
+        catch (Err err)
+        {
+          Env.cur.err.printLine(err.msg)
+          // TODO: allow more than one error before kicking out
+          throw FatalBuildErr()
+        }
       }
     }
   }
