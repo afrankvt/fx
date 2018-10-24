@@ -15,9 +15,9 @@ comp HelloWorld
     </p>
   }
 
-  Void onUpdate(Str msg)
+  Void onUpdate(FxMsg msg)
   {
-    if (msg == "inc") count++
-    else if (msg == "dec") count--
+    if (msg.name == "inc") count++
+    else if (msg.name == "dec") count--
   }
 }

@@ -55,9 +55,9 @@ comp InventoryMgr
     <AddItemModal fx-if="showAddItem" fx-bind:flash fx-bind:showAddItem />
   }
 
-  Void onUpdate(Str msg)
+  Void onUpdate(FxMsg msg)
   {
-    if (msg == "dismiss-flash") flash = ""
+    if (msg.name == "dismiss-flash") flash = ""
   }
 }
 
@@ -95,9 +95,9 @@ comp InventoryToolbar
     <button fx-click="new">New Widget</button>
   }
 
-  Void onUpdate(Str msg)
+  Void onUpdate(FxMsg msg)
   {
-    if (msg == "new") showAddItem = true
+    if (msg.name == "new") showAddItem = true
   }
 }
 
@@ -151,11 +151,12 @@ comp InventorySidebar
     </div>
   }
 
-  Void onUpdate(Str msg)
+  Void onUpdate(FxMsg msg)
   {
-    if (msg.startsWith("select"))
+    // TODO: fix to use ->index
+    if (msg.name.startsWith("select"))
     {
-      index := msg.split.last.toInt
+      index := msg.name.split.last.toInt
       items.each |item,i| { item.selected = i == index }
     }
   }
@@ -187,7 +188,7 @@ comp InventoryContent
     <div>TODO</div>
   }
 
-  Void onUpdate(Str msg)
+  Void onUpdate(FxMsg msg)
   {
   }
 }
@@ -277,18 +278,17 @@ comp AddItemModal
     </div>
   }
 
-  Void onUpdate(Str msg)
+  Void onUpdate(FxMsg msg)
   {
-    if (msg == "ok")
+    switch (msg.name)
     {
-      items.add(Widget { it.name=this.name; it.price=this.price })
-      flash = "Item added ${this.name}"
-      showAddItem = false
-    }
+      case "ok":
+        items.add(Widget { it.name=this.name; it.price=this.price })
+        flash = "Item added ${this.name}"
+        showAddItem = false
 
-    if (msg == "close")
-    {
-      showAddItem = false
+      case "close":
+        showAddItem = false
     }
   }
 }

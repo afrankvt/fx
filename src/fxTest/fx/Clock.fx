@@ -10,9 +10,11 @@ comp Clock
     <h2>The current time is {{time}}</h2>
   }
 
-  Void onUpdate(Obj msg)
+  init { "tick" }
+
+  Void onUpdate(FxMsg msg)
   {
-    if (msg == "tick")
+    if (msg.name == "tick")
     {
       time = DateTime.now.toLocale
       sendLater("tick", 1sec)

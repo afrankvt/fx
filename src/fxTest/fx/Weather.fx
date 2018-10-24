@@ -9,7 +9,7 @@ comp Weather
     Str wxStatus
     Str wxStationInfo
     DomCoord? geo
-    Err? err
+    Str? err
   }
 
   init { "geoloc" }
@@ -37,19 +37,19 @@ comp Weather
     <p>{{wxStationInfo}}</p>
   }
 
-  Void onUpdate(Obj msg)
+  Void onUpdate(FxMsg msg)
   {
-    if (msg == "geoloc")
+    if (msg.name == "geoloc")
     {
       geoStatus = "Locating..."
       Win.cur.geoCurPosition(
-        |geo| { send(geo) },
-        |err| { send(err) }
+        |geo| { send("load", ["geo":geo]) },
+        |Err err| { send("err",  ["err":err.msg]) }
       )
     }
-    else if (msg is DomCoord)
+    else if (msg.name == "load")
     {
-      geo = msg
+      geo = msg->geo
       geoStatus = "You are at $geo.lat, $geo.lng"
       wxStatus  = "Loading weather data..."
       send("")
@@ -58,7 +58,7 @@ comp Weather
       sreq.uri = `https://api.weather.gov/points/${geo.lat.toInt},${geo.lng.toInt}`
       sreq.get |sres|
       {
-        if (sres.status != 200) return send(Err("Request faild"))
+        if (sres.status != 200) return send("err", ["err":"Request faild"])
 
         Map json  := JsonInStream(sres.content.in).readJson
         Map props := json["properties"]
@@ -68,7 +68,7 @@ comp Weather
         creq.uri = `https://w1.weather.gov/xml/current_obs/display.php?stid=${stid}`
         creq.get |cres|
         {
-          if (cres.status != 200) return send(Err("Request faild"))
+          if (cres.status != 200) return send("err", ["err":"Request faild"])
 
           doc  := XParser(cres.content.in).parseDoc
           stat := doc.root.elem("station_id").text.val
@@ -82,9 +82,9 @@ comp Weather
         }
       }
     }
-    else if (msg is Err)
+    else if (msg.name == "err")
     {
-      err = msg
+      err = msg->err
       geoStatus = ""
       wxStatus  = ""
     }

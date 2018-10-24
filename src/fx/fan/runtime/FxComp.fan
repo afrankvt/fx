@@ -19,9 +19,9 @@ using dom
 //////////////////////////////////////////////////////////////////////////
 
   ** Send a message to this componen.
-  Void send(Obj msg)
+  Void send(Str name, Str:Obj? data := [:])
   {
-    this->onUpdate(msg)
+    this->onUpdate(FxMsg { it.name=name; it.data=data })
     __elem?.render
   }
 

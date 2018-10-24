@@ -12,6 +12,9 @@
 
 abstract const class FxNode
 {
+  // TODO
+  // FxLoc loc { file, line }
+
   virtual Void dump() {}
 }
 
@@ -162,6 +165,13 @@ const class FxFuncDef : FxNode
   const Str funcName     // function name
   const Str[] funcArgs   // function args ["Type argname", ...]
   const Str funcBody     // fantom source func body
+
+  Bool isUpdate()
+  {
+    retType == "Void"
+      && funcArgs.size == 1
+      && funcArgs.first.split(' ').first == "FxMsg"
+  }
 
   override Void dump()
   {

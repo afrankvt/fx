@@ -195,7 +195,7 @@ isComp := child.attr("fx-comp") != null
 
         name := var[(six+2)..<eix]
         val  := resolveVar(name, data) ?: ""
-        child.setAttr(attr, var.replace("{{$name}}", val))
+        child.setAttr(attr, var.replace("{{$name}}", val.toStr))
       }
     }
 

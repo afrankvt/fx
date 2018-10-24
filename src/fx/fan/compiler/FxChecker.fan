@@ -25,8 +25,8 @@ class FxChecker
       if (n is FxCompDef)
       {
         f := ((FxCompDef)n).funcs.find |f| { f.funcName == "onUpdate" }
-        if (f == null) return
-        if (f.retType != "Void") throw err(n, "onUpdate return type must be Void")
+        if (f != null && !f.isUpdate)
+          throw err(n, "Invalid onUpdate signature != 'Void onUpdate(FxMsg)'")
       }
     }
   }
