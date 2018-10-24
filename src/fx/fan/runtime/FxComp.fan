@@ -21,7 +21,7 @@ using dom
   ** Send a message to this componen.
   Void send(Obj msg)
   {
-    this->__onMsg(msg)
+    this->onUpdate(msg)
     __elem?.render
   }
 

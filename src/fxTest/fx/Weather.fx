@@ -37,7 +37,7 @@ comp Weather
     <p>{{wxStationInfo}}</p>
   }
 
-  onMsg(Obj msg)
+  Void onUpdate(Obj msg)
   {
     if (msg == "geoloc")
     {

@@ -55,7 +55,7 @@ comp InventoryMgr
     <AddItemModal fx-if="showAddItem" fx-bind:flash fx-bind:showAddItem />
   }
 
-  onMsg(Str msg)
+  Void onUpdate(Str msg)
   {
     if (msg == "dismiss-flash") flash = ""
   }
@@ -95,7 +95,7 @@ comp InventoryToolbar
     <button fx-click="new">New Widget</button>
   }
 
-  onMsg(Str msg)
+  Void onUpdate(Str msg)
   {
     if (msg == "new") showAddItem = true
   }
@@ -151,7 +151,7 @@ comp InventorySidebar
     </div>
   }
 
-  onMsg(Str msg)
+  Void onUpdate(Str msg)
   {
     if (msg.startsWith("select"))
     {
@@ -187,7 +187,7 @@ comp InventoryContent
     <div>TODO</div>
   }
 
-  onMsg(Str msg)
+  Void onUpdate(Str msg)
   {
   }
 }
@@ -277,7 +277,7 @@ comp AddItemModal
     </div>
   }
 
-  onMsg(Str msg)
+  Void onUpdate(Str msg)
   {
     if (msg == "ok")
     {

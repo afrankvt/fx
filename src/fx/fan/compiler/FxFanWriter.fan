@@ -118,16 +118,6 @@ class FxFanWriter
       out.printLine("  }")
     }
 
-    // onMsg
-    out.printLine("  Void __onMsg(${comp.msg.argType} ${comp.msg.argName})")
-    out.printLine("  {")
-    comp.msg.funcBody.splitLines.each |s|
-    {
-      t := s.trim
-      if (t.size > 0) out.printLine("    $t")
-    }
-    out.printLine("  }")
-
     // funcs
     comp.funcs.each |f|
     {

@@ -15,7 +15,7 @@ comp HelloWorld
     </p>
   }
 
-  onMsg(Str msg)
+  Void onUpdate(Str msg)
   {
     if (msg == "inc") count++
     else if (msg == "dec") count--

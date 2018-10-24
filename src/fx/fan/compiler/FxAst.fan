@@ -66,9 +66,6 @@ const class FxCompDef : FxNode
   const FxInitDef init
   const FxStyleDef style
   const FxTemplateDef template
-  const FxMsgDef msg
-  // TODO
-  // const FxFuncDef msg
   const FxFuncDef[] funcs
 
   override Void dump()
@@ -77,7 +74,6 @@ const class FxCompDef : FxNode
     echo("{")
     data.dump
     template.dump
-    msg.dump
     funcs.each |f| { f.dump }
     echo("}")
   }
@@ -155,33 +151,6 @@ const class FxInitDef : FxNode
 }
 
 *************************************************************************
-** FxMsgDef
-*************************************************************************
-
-// TODO: replace this with a FxFuncDef
-
-const class FxMsgDef : FxNode
-{
-  new make(|This| f) { f(this) }
-
-  const Str argType  := "Obj?"  // arg type qname
-  const Str argName  := "msg"   // arg identifier
-  const Str funcBody := ""      // fantom source func body
-
-  override Void dump()
-  {
-    echo("  onMsg($argType $argName)")
-    echo("  {")
-    funcBody.splitLines.each |s|
-    {
-      t := s.trim
-      if (t.size > 0) echo("    $t")
-    }
-    echo("  }")
-  }
-}
-
-*************************************************************************
 ** FxFuncDef
 *************************************************************************
 
@@ -189,10 +158,10 @@ const class FxFuncDef : FxNode
 {
   new make(|This| f) { f(this) }
 
-  const Str retType         // return type
-  const Str funcName        // function name
-  const Str[] funcArgs      // function args ["Type argname", ...]
-  const Str funcBody := ""  // fantom source func body
+  const Str retType      // return type
+  const Str funcName     // function name
+  const Str[] funcArgs   // function args ["Type argname", ...]
+  const Str funcBody     // fantom source func body
 
   override Void dump()
   {
