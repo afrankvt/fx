@@ -14,9 +14,6 @@ abstract const class FxDef
 {
   // TODO
   // FxLoc loc { file, line }
-
-  // TODO: nuke dump in this API; pull out to external util if we really want it
-  virtual Void dump() {}
 }
 
 *************************************************************************
@@ -28,11 +25,6 @@ const class FxUsingDef : FxDef
   new make(|This| f) { f(this) }
 
   const Str pod
-
-  override Void dump()
-  {
-    echo("using $pod")
-  }
 }
 
 *************************************************************************
@@ -46,14 +38,6 @@ const class FxStructDef : FxDef
   const Str qname
   const Str name
   const FxPropDef[] props
-
-  override Void dump()
-  {
-    echo("stuct $qname")
-    echo("{")
-    props.each |p| { p.dump }
-    echo("}")
-  }
 }
 
 *************************************************************************
@@ -71,16 +55,6 @@ const class FxCompDef : FxDef
   const FxStyleDef style
   const FxTemplateDef template
   const FxFuncDef[] funcs
-
-  override Void dump()
-  {
-    echo("comp $qname")
-    echo("{")
-    data.dump
-    template.dump
-    funcs.each |f| { f.dump }
-    echo("}")
-  }
 }
 
 *************************************************************************
@@ -106,14 +80,6 @@ const class FxPropDef : FxDef
   const Str type      // prop qname
   const Str name      // prop name
   const Str? defVal   // opt defVal expr
-
-  override Void dump()
-  {
-    if (defVal == null)
-      echo("  $type $name")
-    else
-      echo("  $type $name := $defVal")
-  }
 }
 
 *************************************************************************
@@ -125,14 +91,6 @@ const class FxDataDef : FxDef
   new make(|This| f) { f(this) }
 
   const FxPropDef[] props := [,]
-
-  override Void dump()
-  {
-    echo("  data")
-    echo("  {")
-    props.each |p| { Env.cur.out.print("  "); p.dump }
-    echo("  }")
-  }
 }
 
 *************************************************************************
@@ -145,13 +103,6 @@ const class FxInitDef : FxDef
 
   const Str msg := ""  // message expression
 
-  override Void dump()
-  {
-    echo("  init")
-    echo("  {")
-    echo("    $msg")
-    echo("  }")
-  }
 }
 
 *************************************************************************
@@ -173,19 +124,6 @@ const class FxFuncDef : FxDef
       && funcArgs.size == 1
       && funcArgs.first.split(' ').first == "FxMsg"
   }
-
-  override Void dump()
-  {
-    args := funcArgs.join(", ")
-    echo("  ${retType} ${funcName}($args)")
-    echo("  {")
-    funcBody.splitLines.each |s|
-    {
-      t := s.trim
-      if (t.size > 0) echo("    $t")
-    }
-    echo("  }")
-  }
 }
 
 *************************************************************************
@@ -196,20 +134,7 @@ const class FxStyleDef : FxDef
 {
   new make(|This| f) { f(this) }
 
-  ** Style CSS source.
   const Str css := ""
-
-  override Void dump()
-  {
-    echo("  style")
-    echo("  {")
-    css.splitLines.each |s|
-    {
-      t := s.trim
-      if (t.size > 0) echo("    $t")
-    }
-    echo("  }")
-  }
 }
 
 *************************************************************************
@@ -220,16 +145,7 @@ const class FxTemplateDef : FxDef
 {
   new make(|This| f) { f(this) }
 
-  ** Template AST.
   const FxDef[] nodes
-
-  override Void dump()
-  {
-    echo("  template")
-    echo("  {")
-    nodes.each |n| { n.dump }
-    echo("  }")
-  }
 }
 
 *************************************************************************
@@ -243,8 +159,6 @@ const class FxDirDef : FxDef
   const Str dir
   const Str expr
   const FxDef[] kids
-
-  override Void dump() { echo("") }
 }
 
 *************************************************************************
@@ -267,17 +181,6 @@ const class FxNodeDef : FxDef
 
   Bool isComp() { tagName[0].isUpper }
   Str qname() { "${podName}::${tagName}" }
-
-  override Void dump()
-  {
-    buf := StrBuf()
-    buf.add("<${tagName}")
-    attrs.each |v,n| { buf.add(" ${n}=\"${v}\"") }
-    buf.add(">")
-    echo("${buf.toStr}")
-    kids.each |k| { k.dump }  // TODO: indent
-    echo("</${tagName}>")
-  }
 }
 
 *************************************************************************
@@ -288,10 +191,8 @@ const class FxBindDef : FxDef
 {
   new make(|This| f) { f(this) }
 
-  const Str local
-  const Str extern
-
-  override Void dump() { echo("") }
+  const Str local   // local var name
+  const Str extern  // external var name
 }
 
 *************************************************************************
@@ -302,10 +203,8 @@ const class FxAttrDef : FxDef
 {
   new make(|This| f) { f(this) }
 
-  const Str name
-  const Obj val
-
-  override Void dump() { echo("${name} = ...") }
+  const Str name  // attr name
+  const Obj val   // attr value
 }
 
 *************************************************************************
@@ -316,10 +215,7 @@ const class FxTextNodeDef : FxDef
 {
   new make(|This| f) { f(this) }
 
-  ** Text content for node.
-  const Str text
-
-  override Void dump() { echo(text) }
+  const Str text   // text content for node
 }
 
 *************************************************************************
@@ -330,8 +226,5 @@ const class FxVarNodeDef : FxDef
 {
   new make(|This| f) { f(this) }
 
-  ** Var name for this node.
-  const Str name
-
-  override Void dump() { echo("{{$name}}") }
+  const Str name  // var name for this node.
 }
