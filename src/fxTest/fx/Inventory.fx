@@ -61,9 +61,20 @@ comp InventoryMgr
     </div>
   }
 
+  init { "init" }
+
   Void onUpdate(FxMsg msg)
   {
-    if (msg.name == "dismiss-flash") flash = ""
+    switch (msg.name)
+    {
+      case "init":
+        items = [
+          Widget { it.name="Nuts";    it.price=1.25f },
+          Widget { it.name="Bolts";   it.price=0.75f },
+          Widget { it.name="Washers"; it.price=0.12f }
+        ]
+      case "dismiss-flash": flash = ""
+    }
   }
 }
 
@@ -131,16 +142,17 @@ comp InventorySidebar
       overflow-y: auto;
     }
 
-    & div.list-item div {
+    & div.list-item {
       padding: 10px 20px;
       border-bottom: 1px solid #f8f8f8;
+      cursor: default;
     }
 
-    & div.list-item div span.price {
+    & div.list-item span.price {
       float: right;
     }
 
-    & div.list-item div.selected {
+    & div.list-item.selected {
       background: #3498db;
       color: #fff;
       border-color: #2980b9;
@@ -163,8 +175,8 @@ comp InventorySidebar
 
   Void onUpdate(FxMsg msg)
   {
-    if (msg.name == "index")
-      items.each |item,i| { item.selected = i.toStr == msg->index }
+    if (msg.name == "select")
+      items.each |item,i| { item.selected = i == msg->index }
   }
 }
 
