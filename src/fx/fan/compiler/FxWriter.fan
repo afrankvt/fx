@@ -165,6 +165,16 @@ class FxWriter
           }
           out.print(sp).printLine("  ]")
         }
+        if (e.events.size > 0)
+        {
+          out.print(sp).printLine("  it.events = [")
+          e.events.each |v|
+          {
+            writeVnode(v, out, indent+4)
+            out.printLine(",")
+          }
+          out.print(sp).printLine("  ]")
+        }
         if (e.kids.size > 0)
         {
           out.print(sp).printLine("  it.children = [")
@@ -186,6 +196,13 @@ class FxWriter
         out.print(sp).printLine("FxVattr { ")
         out.print(sp).printLine("  it.name=${a.name.toCode}")
         out.print(sp).printLine("  it.val=${a.val.toStr.toCode}")
+        out.print(sp).print("}")
+
+      case FxEventDef#:
+        FxEventDef e := node
+        out.print(sp).printLine("FxVevent { ")
+        out.print(sp).printLine("  it.event=${e.event.toCode}")
+        out.print(sp).printLine("  it.msg=${e.msg.toStr.toCode}")
         out.print(sp).print("}")
 
       case FxDirDef#:

@@ -103,6 +103,7 @@ internal class FxTemplateParser
     nodeName := nextToken(TmTokenType.identifier).val
     binds    := FxBindDef[,]
     attrs    := FxAttrDef[,]
+    events   := FxEventDef[,]
     kids     := FxDef[,]
 
     TmToken? token
@@ -120,15 +121,20 @@ internal class FxTemplateParser
           val = nextToken(TmTokenType.attrVal).val
         }
 
-        if (name[0] == '&')
+        switch (name[0])
         {
-          local  := name[1..-1]
-          extern := val=="" ? local : val
-          binds.add(FxBindDef { it.local=local; it.extern=extern })
-        }
-        else
-        {
-          attrs.add(FxAttrDef { it.name=name; it.val=val })
+          case '&':
+            local  := name[1..-1]
+            extern := val=="" ? local : val
+            binds.add(FxBindDef { it.local=local; it.extern=extern })
+
+          case '@':
+            event := name[1..-1]
+            msg   := val
+            events.add(FxEventDef { it.event=event; it.msg=msg })
+
+          default:
+            attrs.add(FxAttrDef { it.name=name; it.val=val })
         }
         continue
       }
@@ -207,6 +213,7 @@ internal class FxTemplateParser
         it.tagName = nodeName
         it.binds   = binds
         it.attrs   = attrs
+        it.events  = events
         it.kids    = kids
         it.podName = this.podName // just always set
       }
@@ -277,7 +284,7 @@ internal class FxTemplateParser
 
 // TODO: break out var bindings as distinct token?
     // indentifer
-    if (isScopeTag && (ch.isAlpha || ch == '&'))
+    if (isScopeTag && (ch.isAlpha || ch == '&' || ch == '@'))
     {
       buf.addChar(ch)
       while (peek != null && (peek.isAlphaNum || peek == ':' || peek == '-'))

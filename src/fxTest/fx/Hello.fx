@@ -11,8 +11,8 @@ comp HelloWorld
     <div>
       <p>The current value of <b>count</b> is <b>{{count}}</b></p>
       <p>
-        <button fx-click="dec">--</button>
-        <button fx-click="inc">++</button>
+        <button @click="dec">--</button>
+        <button @click="inc">++</button>
       </p>
     </div>
   }

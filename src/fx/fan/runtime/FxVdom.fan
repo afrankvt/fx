@@ -60,9 +60,12 @@ using dom
 @NoDoc @Js const class FxVelem : FxVnode
 {
   new make(|This| f) { f(this) }
+
   const Str tag
-  const FxVbind[] binds := [,]
+  //const FxVbind[] binds := [,]
   const FxVattr[] attrs := [,]
+  const FxVevent[] events := [,]
+
   override Obj[] toDom(FxComp comp, Str:Obj data)
   {
     if (tag.contains("::"))
@@ -78,18 +81,37 @@ using dom
     }
 
     elem := Elem(tag)
-    attrs.each |a|
+
+    // attributes
+    attrs.each |a| { elem.setAttr(a.name, a.val) }
+
+    // events
+    events.each |e|
     {
-      // TODO: @<event>
-      if (a.name == "fx-click")
+      elem.onEvent(e.event, false)
       {
-        elem.onEvent("click", false) { comp.send(a.val) }
-      }
-      else
-      {
-        elem.setAttr(a.name, a.val)
+        // TODO: this needs to move to be a compile time thing...
+        x := e.msg.toStr.split(' ')
+        name := x.first
+        edat := Str:Obj?[:]
+        if (x.size > 1)
+        {
+          // TODO: shield your eyes young padawan
+          x[1..-1].join(" ")[1..-2].split(',').each |kv|
+          {
+            y := kv.split(':')
+            k := y[0]
+            v := y[1]
+            edat[k] = v
+          }
+
+          echo("> $name => $edat")
+        }
+        comp.send(name, edat)
       }
     }
+
+    // kids
     children.each |k|
     {
       // TODO: need to cleanup how text nodes are handled on dom
@@ -102,6 +124,7 @@ using dom
         else Win.cur.doc.addTextNode(elem, x)
       }
     }
+
     return [elem]
   }
 }
@@ -110,12 +133,13 @@ using dom
 ** FxVbind
 *************************************************************************
 
-@NoDoc @Js const class FxVbind
-{
-  new make(|This| f) { f(this) }
-  const Str local
-  const Str extern
-}
+// TODO: don't think we need this client side...
+// @NoDoc @Js const class FxVbind
+// {
+//   new make(|This| f) { f(this) }
+//   const Str local
+//   const Str extern
+// }
 
 *************************************************************************
 ** FxVattr
@@ -126,6 +150,17 @@ using dom
   new make(|This| f) { f(this) }
   const Str name
   const Obj val
+}
+
+*************************************************************************
+** FxVattr
+*************************************************************************
+
+@NoDoc @Js const class FxVevent
+{
+  new make(|This| f) { f(this) }
+  const Str event
+  const Obj msg
 }
 
 *************************************************************************

@@ -176,6 +176,7 @@ const class FxNodeDef : FxDef
   const Str tagName
   const FxBindDef[] binds
   const FxAttrDef[] attrs
+  const FxEventDef[] events
   const FxDef[] kids
   const Str? podName
 
@@ -205,6 +206,18 @@ const class FxAttrDef : FxDef
 
   const Str name  // attr name
   const Obj val   // attr value
+}
+
+*************************************************************************
+** FxEventDef
+*************************************************************************
+
+const class FxEventDef : FxDef
+{
+  new make(|This| f) { f(this) }
+
+  const Str event   // event name
+  const Obj msg     // msg to send (TODO)
 }
 
 *************************************************************************
