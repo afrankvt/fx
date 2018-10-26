@@ -163,9 +163,8 @@ comp InventorySidebar
   {
     <div>
       [for item,index in items]
-        <div class="list-item"
-            // fx-if:class:selected="item.selected"
-            @click="select [index:{{index}}]">
+        <div class="list-item" fx-if:item.selected:class="selected"
+             @click="select [index:{{index}}]">
           {{index}}: {{item.name}}
           <span class="price">${{item.price}}</span>
         </div>

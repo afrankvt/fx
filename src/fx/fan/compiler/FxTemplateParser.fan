@@ -287,7 +287,7 @@ internal class FxTemplateParser
     if (isScopeTag && (ch.isAlpha || ch == '&' || ch == '@'))
     {
       buf.addChar(ch)
-      while (peek != null && (peek.isAlphaNum || peek == ':' || peek == '-'))
+      while (peek != null && (peek.isAlphaNum || peek == ':' || peek == '-' || peek == '.'))
       {
         buf.addChar(read)
       }

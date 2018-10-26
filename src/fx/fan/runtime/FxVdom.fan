@@ -37,6 +37,15 @@ using dom
   ** Convert virtual node to a DOM element.
   abstract Obj[] toDom(FxComp comp, Str:Obj data)
 
+  ** Is value 'truthy'
+  protected Bool isTruthy(Obj? val)
+  {
+    if (val is Bool) return val
+    if (val is Str)  return ((Str)val).size > 0
+    if (val != null) return true
+    return false
+  }
+
   ** Resolve a variable expr to a data value.
   protected Obj? resolveVar(Str expr, Str:Obj? data)
   {
@@ -83,31 +92,49 @@ using dom
     elem := Elem(tag)
 
     // attributes
-    attrs.each |a| { elem.setAttr(a.name, a.val) }
+    attrs.each |a|
+    {
+      // TODO: move this to compiler time thing...
+      if (a.name.startsWith("fx-if:"))
+      {
+        p := a.name["fx-if:".size..-1].split(':')
+        var  := p[0]
+        name := p[1]
+        val  := resolveVar(var, data)
+        if (isTruthy(val))
+        {
+          // TODO: move this to a FxVnode helper method
+          if (name == "class") elem.style.addClass(a.val)
+          else elem.setAttr(name, a.val)
+        }
+      }
+      else
+      {
+        elem.setAttr(a.name, a.val)
+      }
+    }
 
     // events
     events.each |e|
     {
-      elem.onEvent(e.event, false)
+      // TODO: this needs to move to be a compile time thing...
+      x := e.msg.toStr.split(' ')
+      name := x.first
+      edat := Str:Obj?[:]
+      if (x.size > 1)
       {
-        // TODO: this needs to move to be a compile time thing...
-        x := e.msg.toStr.split(' ')
-        name := x.first
-        edat := Str:Obj?[:]
-        if (x.size > 1)
+        // TODO: shield your eyes young padawan
+        x[1..-1].join(" ")[1..-2].split(',').each |kv|
         {
-          // TODO: shield your eyes young padawan
-          x[1..-1].join(" ")[1..-2].split(',').each |kv|
-          {
-            y := kv.split(':')
-            k := y[0]
-            Obj v := y[1]
-            if (v.toStr[0] == '{') v = data[v.toStr[2..-3]]
-            edat[k] = v
-          }
+          y := kv.split(':')
+          k := y[0]
+          Obj v := y[1]
+          if (v.toStr[0] == '{') v = data[v.toStr[2..-3]]
+          edat[k] = v
         }
-        comp.send(name, edat)
       }
+
+      elem.onEvent(e.event, false) { comp.send(name, edat) }
     }
 
     // kids
@@ -242,14 +269,4 @@ using dom
     }
     return Obj#.emptyList
   }
-
-  ** Is value 'truthy'
-  private Bool isTruthy(Obj? val)
-  {
-    if (val is Bool) return val
-    if (val is Str)  return ((Str)val).size > 0
-    if (val != null) return true
-    return false
-  }
 }
-
