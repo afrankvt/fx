@@ -51,12 +51,13 @@ abstract class BuildFxPod : BuildPod
           // ast.each |n| { n.dump }
           FxChecker(ast).run
           out := (outDir + `${file.basename}.fan`).out
-          FxFanWriter(podName, ast).write(out)
+          FxWriter(podName, ast).write(out)
           out.sync.close
         }
         catch (Err err)
         {
           Env.cur.err.printLine(err.msg)
+          // err.trace
           // TODO: allow more than one error before kicking out
           throw FatalBuildErr()
         }

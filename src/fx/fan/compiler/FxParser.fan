@@ -71,24 +71,24 @@ internal class FxParser
   }
 
   ** Parse input stream.
-  FxNode[] parse()
+  FxDef[] parse()
   {
-    nodes := FxNode[,]
+    defs := FxDef[,]
     Token? token
 
     while ((token = nextToken).isEos == false)
     {
       if (token.isKeyword)
       {
-        if (token.val == "using")  { nodes.add(parseUsing);  continue }
-        if (token.val == "struct") { nodes.add(parseStruct); continue }
-        if (token.val == "comp")   { nodes.add(parseComp);   continue }
+        if (token.val == "using")  { defs.add(parseUsing);  continue }
+        if (token.val == "struct") { defs.add(parseStruct); continue }
+        if (token.val == "comp")   { defs.add(parseComp);   continue }
         throw parseErr("Invalid keyword '$token.val'")
       }
       throw unexpectedToken(token)
     }
 
-    return nodes
+    return defs
   }
 
 //////////////////////////////////////////////////////////////////////////
@@ -96,7 +96,7 @@ internal class FxParser
 //////////////////////////////////////////////////////////////////////////
 
   ** Parse 'using' definition.
-  private FxNode parseUsing()
+  private FxDef parseUsing()
   {
     pod := nextToken(TokenType.identifier).val
     return FxUsingDef { it.pod=pod }
@@ -107,7 +107,7 @@ internal class FxParser
 //////////////////////////////////////////////////////////////////////////
 
   ** Parse 'struct' definition.
-  private FxNode parseStruct()
+  private FxDef parseStruct()
   {
     name  := nextToken(TokenType.typeName).val
     props := FxPropDef[,]
@@ -145,7 +145,7 @@ internal class FxParser
 //////////////////////////////////////////////////////////////////////////
 
   ** Parse 'comp' definition.
-  private FxNode parseComp()
+  private FxDef parseComp()
   {
     FxDataDef? data
     FxInitDef? init
@@ -184,7 +184,7 @@ internal class FxParser
   }
 
   ** Parse a 'data' definition block.
-  private FxNode parseData()
+  private FxDef parseData()
   {
     props := FxPropDef[,]
 
@@ -221,21 +221,21 @@ internal class FxParser
   }
 
   ** Parse a 'init' definition block.
-  private FxNode parseInit()
+  private FxDef parseInit()
   {
     msg := parseRawBlock
     return FxInitDef { it.msg=msg }
   }
 
   ** Parse a 'style' definition block.
-  private FxNode parseStyle()
+  private FxDef parseStyle()
   {
     css := parseRawBlock
     return FxStyleDef { it.css=css }
   }
 
   ** Parse a 'template' definition block.
-  private FxNode parseTemplate()
+  private FxDef parseTemplate()
   {
     start  := line
     markup := parseRawBlock
@@ -244,7 +244,7 @@ internal class FxParser
   }
 
   ** Parse a 'func' definition block.
-  private FxNode parseFunc(Token token)
+  private FxDef parseFunc(Token token)
   {
     // method sig
     retType  := token.val

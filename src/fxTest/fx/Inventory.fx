@@ -37,22 +37,28 @@ comp InventoryMgr
   style
   {
     & div.flash { background: #27ae60; color: #fff; padding: 10px; }
-    & div.flash span.close { padding: 0 5px; float: right; cursor: default; }
-    & div.flash span.close:hover { background: #2ecc71; }
+    & div.flash span { padding: 0 5px; float: right; cursor: default; }
+    & div.flash span:hover { background: #2ecc71; }
   }
 
   template
   {
-    <div fx-if="flash" class="flash">
-      {{flash}}
-      <span fx-click="dismiss-flash" class="close">X</span>
-    </div>
-    <InventoryToolbar fx-bind:showAddItem />
-    <InventorySidebar />
-    <InventoryContent />
+    <div>
+      // flash
+      [if flash]
+        <div class="flash">
+          {{flash}} <span fx-click="dismiss-flash">X</span>
+        </div>
+      [/if]
 
-    // modals
-    <AddItemModal fx-if="showAddItem" fx-bind:flash fx-bind:showAddItem />
+      // main content
+      <InventoryToolbar &showAddItem />
+      <InventorySidebar />
+      <InventoryContent />
+
+      // modals
+      [if showAddItem]<AddItemModal &flash &showAddItem />[/if]
+    </div>
   }
 
   Void onUpdate(FxMsg msg)
@@ -143,22 +149,22 @@ comp InventorySidebar
 
   template
   {
-    <div class="list-item" fx-for="(item,index) in items">
-      <div fx-if:class:selected="item.selected" fx-click="select {{index}}">
-        {{index}}: {{item.name}}
-        <span class="price">${{item.price}}</span>
-      </div>
+    <div>
+      [for item,index in items]
+        <div class="list-item"
+            fx-if:class:selected="item.selected"
+            fx-click="select [index:{{index}}]">
+          {{index}}: {{item.name}}
+          <span class="price">${{item.price}}</span>
+        </div>
+      [/for]
     </div>
   }
 
   Void onUpdate(FxMsg msg)
   {
-    // TODO: fix to use ->index
-    if (msg.name.startsWith("select"))
-    {
-      index := msg.name.split.last.toInt
-      items.each |item,i| { item.selected = i == index }
-    }
+    if (msg.name == "index")
+      items.each |item,i| { item.selected = i == msg->index }
   }
 }
 
@@ -259,21 +265,22 @@ comp AddItemModal
 
   template
   {
-    <div class="mask"></div>
-
-    <div class="modal">
-      <h2>Add Item</h2>
-      <p>
-        <label>Item Name:</label>
-        <input fx-form="name" type="text" size="40" autofocus />
-      </p>
-      <p>
-        <label>Item Price:</label>
-        <input fx-form="price" type="text" size="20" />
-      </p>
-      <div>
-        <button fx-click="ok">Ok</button>
-        <button fx-click="close">Cancel</button>
+    <div>
+      <div class="mask"></div>
+      <div class="modal">
+        <h2>Add Item</h2>
+        <p>
+          <label>Item Name:</label>
+          <input fx-form="name" type="text" size="40" autofocus />
+        </p>
+        <p>
+          <label>Item Price:</label>
+          <input fx-form="price" type="text" size="20" />
+        </p>
+        <div>
+          <button fx-click="ok">Ok</button>
+          <button fx-click="close">Cancel</button>
+        </div>
       </div>
     </div>
   }

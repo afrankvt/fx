@@ -17,6 +17,8 @@ internal enum class TmTokenType
   attrVal,
   bracketOpen,
   bracketClose,
+  sqBracketOpen,
+  sqBracketClose,
   slash,
   equal,
   varStart,
@@ -41,15 +43,17 @@ internal const class TmToken
   ** Token literval val.
   const Str val
 
-  Bool isComment()      { type == TmTokenType.comment      }
-  Bool isIdentifier()   { type == TmTokenType.identifier   }
-  Bool isBracketOpen()  { type == TmTokenType.bracketOpen  }
-  Bool isBracketClose() { type == TmTokenType.bracketClose }
-  Bool isSlash()        { type == TmTokenType.slash        }
-  Bool isText()         { type == TmTokenType.text         }
-  Bool isVarStart()     { type == TmTokenType.varStart     }
-  Bool isVarEnd()       { type == TmTokenType.varEnd       }
-  Bool isEos()          { type == TmTokenType.eos          }
+  Bool isComment()        { type == TmTokenType.comment        }
+  Bool isIdentifier()     { type == TmTokenType.identifier     }
+  Bool isBracketOpen()    { type == TmTokenType.bracketOpen    }
+  Bool isBracketClose()   { type == TmTokenType.bracketClose   }
+  Bool isSqBracketOpen()  { type == TmTokenType.sqBracketOpen  }
+  Bool isSqBracketClose() { type == TmTokenType.sqBracketClose }
+  Bool isSlash()          { type == TmTokenType.slash          }
+  Bool isText()           { type == TmTokenType.text           }
+  Bool isVarStart()       { type == TmTokenType.varStart       }
+  Bool isVarEnd()         { type == TmTokenType.varEnd         }
+  Bool isEos()            { type == TmTokenType.eos            }
 }
 
 *************************************************************************
@@ -73,31 +77,33 @@ internal class FxTemplateParser
   }
 
   ** Parse input stream.
-  FxNode[] parse()
+  FxDef[] parse()
   {
-    nodes := FxNode[,]
+    defs := FxDef[,]
     TmToken? token
 
     while ((token = nextToken).isEos == false)
     {
       // echo("$token.type: $token.val")
-      if (token.isBracketOpen) { nodes.add(parseElem); continue }
-      // throw unexpectedToken(token)
+      if (token.isBracketOpen) { defs.add(parseNode(token)); continue }
+      throw unexpectedToken(token)
     }
 
-    return nodes
+    return defs
   }
 
 //////////////////////////////////////////////////////////////////////////
 // Elem
 //////////////////////////////////////////////////////////////////////////
 
-  ** Parse an element.
-  private FxNode parseElem()
+  ** Parse an element or directive node.
+  private FxDef parseNode(TmToken pre)
   {
-    tagName := nextToken(TmTokenType.identifier).val
-    attrs   := Str:Str[:]
-    kids    := FxNode[,]
+    nodeType := pre.isBracketOpen ? typeElem : typeDir
+    nodeName := nextToken(TmTokenType.identifier).val
+    binds    := FxBindDef[,]
+    attrs    := FxAttrDef[,]
+    kids     := FxDef[,]
 
     TmToken? token
     while ((token = nextToken).isEos == false)
@@ -105,22 +111,30 @@ internal class FxTemplateParser
       // attr
       if (token.isIdentifier)
       {
+        name := token.val
+        Obj val := ""
+
         if (peek == '=')
         {
-          name := token.val
           nextToken(TmTokenType.equal)
-          val := nextToken(TmTokenType.attrVal).val
-          attrs[name] = val
+          val = nextToken(TmTokenType.attrVal).val
+        }
+
+        if (name[0] == '&')
+        {
+          local  := name[1..-1]
+          extern := val=="" ? local : val
+          binds.add(FxBindDef { it.local=local; it.extern=extern })
         }
         else
         {
-          name := token.val
-          attrs[name] = ""
+          attrs.add(FxAttrDef { it.name=name; it.val=val })
         }
         continue
       }
 
       if (token.isBracketClose) continue
+      if (token.isSqBracketClose) continue
 
       if (token.isSlash)
       {
@@ -139,21 +153,40 @@ internal class FxTemplateParser
           // close tag
           nextToken(TmTokenType.slash)
           close := nextToken(TmTokenType.identifier).val
-          if (close != tagName) throw parseErr("Tag names do not match '$tagName' != '$close'")
+          if (close != nodeName) throw parseErr("Tag names do not match '$nodeName' != '$close'")
           nextToken(TmTokenType.bracketClose)
           break
         }
         else
         {
           // recurse
-          kids.add(parseElem)
+          kids.add(parseNode(token))
+          continue
+        }
+      }
+
+      if (token.isSqBracketOpen)
+      {
+        if (peek == '/')
+        {
+          // close dir
+          nextToken(TmTokenType.slash)
+          close := nextToken(TmTokenType.identifier).val
+          if (close != nodeName) throw parseErr("Directives do not match '$nodeName' != '$close'")
+          nextToken(TmTokenType.sqBracketClose)
+          break
+        }
+        else
+        {
+          // recurse
+          kids.add(parseNode(token))
           continue
         }
       }
 
       if (token.isText)
       {
-        kids.add(FxTmTextNode { it.text=token.val })
+        kids.add(FxTextNodeDef { it.text=token.val })
         continue
       }
 
@@ -161,20 +194,29 @@ internal class FxTemplateParser
       {
         name := nextToken(TmTokenType.var).val
         nextToken(TmTokenType.varEnd)
-        kids.add(FxTmVarNode { it.name=name })
+        kids.add(FxVarNodeDef { it.name=name })
         continue
       }
 
       throw unexpectedToken(token)
     }
 
-    return FxTmElemNode
-    {
-      it.tagName = tagName
-      it.attrs   = attrs
-      it.kids    = kids
-      it.podName = this.podName // just always set
-    }
+    if (nodeType == typeElem)
+      return FxNodeDef
+      {
+        it.tagName = nodeName
+        it.binds   = binds
+        it.attrs   = attrs
+        it.kids    = kids
+        it.podName = this.podName // just always set
+      }
+    else
+      return FxDirDef
+      {
+        it.dir  = nodeName
+        it.expr = attrs.join(" ") |a| { a.name } // TODO
+        it.kids = kids
+      }
   }
 
 //////////////////////////////////////////////////////////////////////////
@@ -221,8 +263,21 @@ internal class FxTemplateParser
       return TmToken(TmTokenType.comment, buf.toStr)
     }
 
+// TODO
+    // directive
+    if (isScopeDir && ch.isAlpha)
+    {
+      buf.addChar(ch)
+      while (peek != null && (peek.isAlphaNum || peek == ','))
+      {
+        buf.addChar(read)
+      }
+      return TmToken(TmTokenType.identifier, buf.toStr)
+    }
+
+// TODO: break out var bindings as distinct token?
     // indentifer
-    if (isScopeTag && ch.isAlpha)
+    if (isScopeTag && (ch.isAlpha || ch == '&'))
     {
       buf.addChar(ch)
       while (peek != null && (peek.isAlphaNum || peek == ':' || peek == '-'))
@@ -258,6 +313,8 @@ internal class FxTemplateParser
     // brackets
     if (ch == '<') { scope=scopeTag;   return TmToken(TmTokenType.bracketOpen,  ch.toChar) }
     if (ch == '>') { scope=scopeChild; return TmToken(TmTokenType.bracketClose, ch.toChar) }
+    if (ch == '[') { scope=scopeDir;   return TmToken(TmTokenType.sqBracketOpen,  ch.toChar) }
+    if (ch == ']') { scope=scopeChild; return TmToken(TmTokenType.sqBracketClose, ch.toChar) }
     if (ch == '/') return TmToken(TmTokenType.slash, ch.toChar)
 
     // vars
@@ -302,6 +359,7 @@ internal class FxTemplateParser
   ** Peek next char in stream.
   private Int? peek() { in.peek }
 
+  private Bool isScopeDir()   { scope == scopeDir   }
   private Bool isScopeTag()   { scope == scopeTag   }
   private Bool isScopeChild() { scope == scopeChild }
   private Bool isScopeVar()   { scope == scopeVar   }
@@ -324,10 +382,16 @@ internal class FxTemplateParser
 // Fields
 //////////////////////////////////////////////////////////////////////////
 
+  private const Str[] directives := ["if"]
+
   private const Int scopeNone  := 0
-  private const Int scopeTag   := 1
-  private const Int scopeChild := 2
-  private const Int scopeVar   := 3
+  private const Int scopeDir   := 1
+  private const Int scopeTag   := 2
+  private const Int scopeChild := 3
+  private const Int scopeVar   := 4
+
+  private const Int typeElem := 0
+  private const Int typeDir  := 1
 
   private const Str podName        // pod name of file
   private const Str filename       // filename for input stream

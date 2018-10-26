@@ -12,35 +12,35 @@
 class FxChecker
 {
   ** Constructor.
-  new make(FxNode[] nodes)
+  new make(FxDef[] defs)
   {
-    this.nodes = nodes
+    this.defs = defs
   }
 
   ** Run checker on nodes.
   Void run()
   {
-    nodes.each |n|
+    defs.each |d|
     {
-      if (n is FxCompDef)
+      if (d is FxCompDef)
       {
-        f := ((FxCompDef)n).funcs.find |f| { f.funcName == "onUpdate" }
+        f := ((FxCompDef)d).funcs.find |f| { f.funcName == "onUpdate" }
         if (f != null && !f.isUpdate)
-          throw err(n, "Invalid onUpdate signature != 'Void onUpdate(FxMsg)'")
+          throw err(d, "Invalid onUpdate signature != 'Void onUpdate(FxMsg)'")
       }
     }
   }
 
   ** Create error to indicate validation failed.
-  private Err err(FxNode node, Str msg)
+  private Err err(FxDef def, Str msg)
   {
     Str? name
-    if (node is FxStructDef) name = node->name
-    if (node is FxCompDef)   name = node->name
+    if (def is FxStructDef) name = def->name
+    if (def is FxCompDef)   name = def->name
 
     // TODO: include source path for node def: /x/y/y/Foo.fx(x,y): msg
     return Err(name==null ? msg : "${name}: $msg")
   }
 
-  private FxNode[] nodes
+  private FxDef[] defs
 }

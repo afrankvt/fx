@@ -7,14 +7,15 @@
 //
 
 *************************************************************************
-** FxNode
+** FxDef
 *************************************************************************
 
-abstract const class FxNode
+abstract const class FxDef
 {
   // TODO
   // FxLoc loc { file, line }
 
+  // TODO: nuke dump in this API; pull out to external util if we really want it
   virtual Void dump() {}
 }
 
@@ -22,7 +23,7 @@ abstract const class FxNode
 ** FxUsingDef
 *************************************************************************
 
-const class FxUsingDef : FxNode
+const class FxUsingDef : FxDef
 {
   new make(|This| f) { f(this) }
 
@@ -38,7 +39,7 @@ const class FxUsingDef : FxNode
 ** FxStructDef
 *************************************************************************
 
-const class FxStructDef : FxNode
+const class FxStructDef : FxDef
 {
   new make(|This| f) { f(this) }
 
@@ -59,7 +60,7 @@ const class FxStructDef : FxNode
 ** FxCompDef
 *************************************************************************
 
-const class FxCompDef : FxNode
+const class FxCompDef : FxDef
 {
   new make(|This| f) { f(this) }
 
@@ -86,7 +87,7 @@ const class FxCompDef : FxNode
 ** FxDataProp
 *************************************************************************
 
-const class FxPropDef : FxNode
+const class FxPropDef : FxDef
 {
   new make(|This| f)
   {
@@ -119,7 +120,7 @@ const class FxPropDef : FxNode
 ** FxDataDef
 *************************************************************************
 
-const class FxDataDef : FxNode
+const class FxDataDef : FxDef
 {
   new make(|This| f) { f(this) }
 
@@ -138,7 +139,7 @@ const class FxDataDef : FxNode
 ** FxInitDef
 *************************************************************************
 
-const class FxInitDef : FxNode
+const class FxInitDef : FxDef
 {
   new make(|This| f) { f(this) }
 
@@ -157,7 +158,7 @@ const class FxInitDef : FxNode
 ** FxFuncDef
 *************************************************************************
 
-const class FxFuncDef : FxNode
+const class FxFuncDef : FxDef
 {
   new make(|This| f) { f(this) }
 
@@ -191,7 +192,7 @@ const class FxFuncDef : FxNode
 ** FxStyleDef
 *************************************************************************
 
-const class FxStyleDef : FxNode
+const class FxStyleDef : FxDef
 {
   new make(|This| f) { f(this) }
 
@@ -215,12 +216,12 @@ const class FxStyleDef : FxNode
 ** FxTemplateDef
 *************************************************************************
 
-const class FxTemplateDef : FxNode
+const class FxTemplateDef : FxDef
 {
   new make(|This| f) { f(this) }
 
   ** Template AST.
-  const FxNode[] nodes
+  const FxDef[] nodes
 
   override Void dump()
   {
@@ -232,16 +233,36 @@ const class FxTemplateDef : FxNode
 }
 
 *************************************************************************
-** FxTmElemNode
+** FxDirDef
 *************************************************************************
 
-const class FxTmElemNode : FxNode
+const class FxDirDef : FxDef
 {
   new make(|This| f) { f(this) }
 
+  const Str dir
+  const Str expr
+  const FxDef[] kids
+
+  override Void dump() { echo("") }
+}
+
+*************************************************************************
+** FxNodeDef
+*************************************************************************
+
+const class FxNodeDef : FxDef
+{
+  new make(|This| f)
+  {
+    f(this)
+    if (isComp) tagName = qname
+  }
+
   const Str tagName
-  const Str:Str attrs
-  const FxNode[] kids
+  const FxBindDef[] binds
+  const FxAttrDef[] attrs
+  const FxDef[] kids
   const Str? podName
 
   Bool isComp() { tagName[0].isUpper }
@@ -260,10 +281,38 @@ const class FxTmElemNode : FxNode
 }
 
 *************************************************************************
-** FxTmTextNode
+** FxBindDef
 *************************************************************************
 
-const class FxTmTextNode : FxNode
+const class FxBindDef : FxDef
+{
+  new make(|This| f) { f(this) }
+
+  const Str local
+  const Str extern
+
+  override Void dump() { echo("") }
+}
+
+*************************************************************************
+** FxAttrDef
+*************************************************************************
+
+const class FxAttrDef : FxDef
+{
+  new make(|This| f) { f(this) }
+
+  const Str name
+  const Obj val
+
+  override Void dump() { echo("${name} = ...") }
+}
+
+*************************************************************************
+** FxTextNodeDef
+*************************************************************************
+
+const class FxTextNodeDef : FxDef
 {
   new make(|This| f) { f(this) }
 
@@ -274,10 +323,10 @@ const class FxTmTextNode : FxNode
 }
 
 *************************************************************************
-** FxTmTextNode
+** FxVarNodeDef
 *************************************************************************
 
-const class FxTmVarNode : FxNode
+const class FxVarNodeDef : FxDef
 {
   new make(|This| f) { f(this) }
 

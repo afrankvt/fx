@@ -21,8 +21,18 @@ using dom
   ** Send a message to this componen.
   Void send(Str name, Str:Obj? data := [:])
   {
+    __elem.children.each |k| { __pullFormVals(k) }
     this->onUpdate(FxMsg { it.name=name; it.data=data })
     __elem?.render
+
+    // TODO: huuuuge hack; but update parents for now until we
+    // sort out how to fire off extern bound data props
+    p := __elem?.parent
+    while (p != null)
+    {
+      if (p is FxElem) ((FxElem)p).render
+      p = p.parent
+    }
   }
 
   ** Send a message to this component after the given internval.
@@ -30,6 +40,7 @@ using dom
   {
     Win.cur.setTimeout(timeout) { send(msg) }
   }
+
 
 //////////////////////////////////////////////////////////////////////////
 // Internal API
@@ -40,7 +51,7 @@ using dom
   // do not define an __onMsg method so subclasses can parameterize args
   // virtual Void __onMsg(...) {}
 
-  protected virtual Elem[] __elems() { Elem#.emptyList }
+  protected abstract FxVdom __vdom()
 
   ** Get data map based on current state.
   internal Str:Obj? __data()
@@ -64,6 +75,24 @@ using dom
     if (f.type == Float#) val = Float.fromStr(val)
 
     f.set(this, val)
+  }
+
+  ** Pull form values from inputs back into data array.
+  private Void __pullFormVals(Elem elem)
+  {
+    // short-circut if we reach a sub-comp
+    if (elem.attr("fx-comp") != null) return
+
+    // TODO!!!
+    form := elem.attr("fx-form")
+    if (elem.tagName == "input" && form != null)
+    {
+      this.__setData(form, elem->value)
+    }
+    else
+    {
+      elem.children.each |k| { __pullFormVals(k) }
+    }
   }
 
   ** Delegate extern getter to parent.

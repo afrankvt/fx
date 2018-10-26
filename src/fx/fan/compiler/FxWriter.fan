@@ -7,17 +7,17 @@
 //
 
 **
-** FxFanWriter
+** FxWriter
 **
-class FxFanWriter
+class FxWriter
 {
-  new make(Str podName, FxNode[] nodes)
+  new make(Str podName, FxDef[] defs)
   {
     this.podName = podName
-    this.nodes   = nodes
-    this.usings  = nodes.findType(FxUsingDef#)
-    this.structs = nodes.findType(FxStructDef#)
-    this.comps   = nodes.findType(FxCompDef#)
+    this.defs    = defs
+    this.usings  = defs.findType(FxUsingDef#)
+    this.structs = defs.findType(FxStructDef#)
+    this.comps   = defs.findType(FxCompDef#)
   }
 
   ** Write a new Fantom source file to 'OutStream'
@@ -101,12 +101,9 @@ class FxFanWriter
     out.printLine("  }")
 
     // template
-    out.printLine("  protected override Elem[] __elems()")
-    out.printLine("  {")
-    out.printLine("    return [")
-    comp.template.nodes.each |n| { writeTemplateElem(n, out, 6) }
-    out.printLine("    ]")
-    out.printLine("  }")
+    out.printLine("  protected override const FxVdom __vdom := FxVdom { it.root = ")
+    writeVnode(comp.template.nodes.first, out, 4)
+    out.printLine("\n  }")
 
     // init
     init := comp.init.msg.trimToNull
@@ -136,57 +133,90 @@ class FxFanWriter
     out.printLine("}")
   }
 
-  ** Write FxStructDef as a Fantom class source.
-  private Void writeTemplateElem(FxNode node, OutStream out, Int indent)
+  ** Write vdom.
+  private Void writeVnode(FxDef node, OutStream out, Int indent)
   {
-    elem := node as FxTmElemNode
-    if (elem != null)
+    sp := Str.spaces(indent)
+    switch (node.typeof)
     {
-      if (elem.isComp)
-      {
-        attrs := StrBuf()
-        elem.attrs.each |v,n|
+// TODO: cleanup this code to be more readable...
+      case FxNodeDef#:
+        FxNodeDef e := node
+        out.print(sp).printLine("FxVelem {")
+        out.print(sp).printLine("  it.tag = $e.tagName.toCode")
+        // don't think we need this in js
+        // if (e.binds.size > 0)
+        // {
+        //   out.print(sp).printLine("  it.binds = [")
+        //   e.binds.each |b|
+        //   {
+        //     writeVnode(b, out, indent+4)
+        //     out.printLine(",")
+        //   }
+        //   out.print(sp).printLine("  ]")
+        // }
+        if (e.attrs.size > 0)
         {
-          // TODO: val?
-          if (attrs.size > 0) attrs.addChar(',')
-          attrs.add(n.toCode).addChar(':').add(v.toCode)
+          out.print(sp).printLine("  it.attrs = [")
+          e.attrs.each |a|
+          {
+            writeVnode(a, out, indent+4)
+            out.printLine(",")
+          }
+          out.print(sp).printLine("  ]")
         }
-        if (attrs.isEmpty) attrs.addChar(':')
+        if (e.kids.size > 0)
+        {
+          out.print(sp).printLine("  it.children = [")
+          e.kids.each |k|
+          {
+            writeVnode(k, out, indent+4)
+            out.printLine(",")
+          }
+          out.print(sp).printLine("  ]")
+        }
+        out.print(sp).print("}")
 
-        out.print("${Str.spaces(indent)}")
-        out.printLine("FxRuntime.elem(this, ${elem.qname.toCode}, [${attrs}]),")
-        return
-      }
+      // case FxBindDef#:
+      //   FxBindDef b := node
+      //   out.print(sp).print("FxVbind { it.local=${b.local.toCode}; it.extern=${b.extern.toCode} }")
 
-      out.printLine("${Str.spaces(indent)}Elem(\"$elem.tagName\") {")
-      elem.attrs.each |v,n| { out.printLine("${Str.spaces(indent)}  it.setAttr($n.toCode, $v.toCode)") }
-      elem.kids.each |n| { writeTemplateElem(n, out, indent+2) }
-      out.printLine("${Str.spaces(indent)}},")
-      return
-    }
+      case FxAttrDef#:
+        FxAttrDef a := node
+        out.print(sp).printLine("FxVattr { ")
+        out.print(sp).printLine("  it.name=${a.name.toCode}")
+        out.print(sp).printLine("  it.val=${a.val.toStr.toCode}")
+        out.print(sp).print("}")
 
-    text := node as FxTmTextNode
-    if (text != null)
-    {
-      out.printLine("${Str.spaces(indent)}Elem(\"span\") {")
-      out.printLine("${Str.spaces(indent)}  it.text=${text.text.toCode}")
-      out.printLine("${Str.spaces(indent)}},")
-      return
-    }
+      case FxDirDef#:
+        FxDirDef d := node
+        out.print(sp).printLine("FxVdir {")
+        out.print(sp).printLine("  it.dir=${d.dir.toCode}")
+        out.print(sp).printLine("  it.expr=${d.expr.toCode}")
+        if (d.kids.size > 0)
+        {
+          out.print(sp).printLine("  it.children = [")
+          d.kids.each |k|
+          {
+            writeVnode(k, out, indent+4)
+            out.printLine(",")
+          }
+          out.print(sp).printLine("  ]")
+        }
+        out.print(sp).print("}")
 
-    // TODO: wrapping in <span> can mess up CSS; so should we
-    // do this like React in comment blocks somehow?
+      case FxTextNodeDef#:
+        FxTextNodeDef t := node
+        out.print(sp).print("FxVtext { it.text=${t.text.toCode} }")
 
-    var := node as FxTmVarNode
-    if (var != null)
-    {
-      out.print("${Str.spaces(indent)}")
-      out.printLine("Elem(\"span\") { it.setAttr(\"fx-var\", \"$var.name\") },")
+      case FxVarNodeDef#:
+        FxVarNodeDef v := node
+        out.print(sp).print("FxVexpr { it.expr=${v.name.toCode} }")
     }
   }
 
   const Str podName
-  const FxNode[] nodes
+  const FxDef[] defs
   const FxUsingDef[] usings
   const FxStructDef[] structs
   const FxCompDef[] comps
