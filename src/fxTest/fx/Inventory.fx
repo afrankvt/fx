@@ -47,7 +47,7 @@ comp InventoryMgr
       // flash
       [if flash]
         <div class="flash">
-          {{flash}} <span fx-click="dismiss-flash">X</span>
+          {{flash}} <span @click="dismiss-flash">X</span>
         </div>
       [/if]
 
@@ -98,7 +98,7 @@ comp InventoryToolbar
 
   template
   {
-    <button fx-click="new">New Widget</button>
+    <button @click="new">New Widget</button>
   }
 
   Void onUpdate(FxMsg msg)
@@ -152,8 +152,8 @@ comp InventorySidebar
     <div>
       [for item,index in items]
         <div class="list-item"
-            fx-if:class:selected="item.selected"
-            fx-click="select [index:{{index}}]">
+            // fx-if:class:selected="item.selected"
+            @click="select [index:{{index}}]">
           {{index}}: {{item.name}}
           <span class="price">${{item.price}}</span>
         </div>
@@ -164,7 +164,7 @@ comp InventorySidebar
   Void onUpdate(FxMsg msg)
   {
     if (msg.name == "index")
-      items.each |item,i| { item.selected = i == msg->index }
+      items.each |item,i| { item.selected = i.toStr == msg->index }
   }
 }
 
@@ -278,8 +278,8 @@ comp AddItemModal
           <input fx-form="price" type="text" size="20" />
         </p>
         <div>
-          <button fx-click="ok">Ok</button>
-          <button fx-click="close">Cancel</button>
+          <button @click="ok">Ok</button>
+          <button @click="close">Cancel</button>
         </div>
       </div>
     </div>

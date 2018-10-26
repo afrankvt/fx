@@ -101,11 +101,10 @@ using dom
           {
             y := kv.split(':')
             k := y[0]
-            v := y[1]
+            Obj v := y[1]
+            if (v.toStr[0] == '{') v = data[v.toStr[2..-3]]
             edat[k] = v
           }
-
-          echo("> $name => $edat")
         }
         comp.send(name, edat)
       }
