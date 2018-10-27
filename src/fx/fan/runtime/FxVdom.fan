@@ -128,8 +128,8 @@ using dom
         {
           y := kv.split(':')
           k := y[0]
-          Obj v := y[1]
-          if (v.toStr[0] == '{') v = data[v.toStr[2..-3]]
+          Obj? v := y[1]
+          if (v.toStr[0] == '{') v = resolveVar(v.toStr[2..-3], data)
           edat[k] = v
         }
       }
