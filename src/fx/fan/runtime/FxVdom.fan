@@ -110,7 +110,20 @@ using dom
       }
       else
       {
-        elem.setAttr(a.name, a.val)
+        // TODO: move this to a compiler time thing...
+        vstr := a.val.toStr
+        six  := vstr.index("{{")
+        eix  := vstr.index("}}")
+        if (six == null || eix == null)
+        {
+          elem.setAttr(a.name, a.val)
+        }
+        else
+        {
+          name := vstr[(six+2)..<eix]
+          val  := resolveVar(name, data) ?: ""
+          elem.setAttr(a.name, vstr.replace("{{$name}}", val.toStr))
+        }
       }
     }
 
