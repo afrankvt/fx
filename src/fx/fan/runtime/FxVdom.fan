@@ -82,7 +82,7 @@ using dom
       // TODO FIXIT
       elem := FxElem { it.setAttr("fx-comp", tag) }
       elem.mount
-      elem.comp.__parent = comp
+      elem.comp.parent = comp
       attrs.each |a| { elem.setAttr(a.name, a.val) }
       elem.render
       elem.init

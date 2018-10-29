@@ -37,7 +37,7 @@ using dom
   {
     elem := FxElem { it.setAttr("fx-comp", qname) }
     elem.mount
-    elem.comp.__parent = parentComp
+    elem.comp.parent = parentComp
     attrs.each |v,n| { elem.setAttr(n, v) }
     // attrs.each |v,n|
     // {

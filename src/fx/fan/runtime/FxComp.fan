@@ -18,6 +18,9 @@ using dom
 // Public API
 //////////////////////////////////////////////////////////////////////////
 
+  ** Parent instance for this component, or 'null' if root.
+  FxComp? parent := null
+
   ** Send a message to this componen.
   Void send(Str name, Str:Obj? data := [:])
   {
@@ -40,7 +43,6 @@ using dom
   {
     Win.cur.setTimeout(timeout) { send(msg) }
   }
-
 
 //////////////////////////////////////////////////////////////////////////
 // Internal API
@@ -96,12 +98,11 @@ using dom
   }
 
   ** Delegate extern getter to parent.
-  protected Obj? __getExtern(Str name) { __parent.typeof.field(name).get(__parent) }
+  protected Obj? __getExtern(Str name) { parent.typeof.field(name).get(parent) }
 
   ** Delegate extern setter to parent.
-  protected Void __setExtern(Str name, Obj val) { __parent.typeof.field(name).set(__parent, val) }
+  protected Void __setExtern(Str name, Obj val) { parent.typeof.field(name).set(parent, val) }
 
-  internal FxComp? __parent := null   // parent instance for sub-comps
   internal FxElem? __elem   := null   // bound FxElem instance
   protected Str:Str __externs := [:]  // self:parent extern field name map
   protected Bool __dirty := false     // TODO
