@@ -20,6 +20,7 @@ internal enum class TokenType
   parenOpen,
   parenClose,
   assign,
+  comma,
   comment,
   eos
 }
@@ -48,6 +49,7 @@ internal const class Token
   Bool isParenOpen()  { type == TokenType.parenOpen  }
   Bool isParenClose() { type == TokenType.parenClose }
   Bool isAssign()     { type == TokenType.assign     }
+  Bool isComma()      { type == TokenType.comma      }
   Bool isEos()        { type == TokenType.eos        }
 }
 
@@ -254,6 +256,7 @@ internal class FxParser
     token = nextToken
     while (!token.isParenClose)
     {
+      if (token.isComma) token = nextToken
       argType := token.val
       argName := nextToken(TokenType.identifier).val
       funcArgs.add("$argType $argName")
@@ -349,6 +352,7 @@ internal class FxParser
 
     // operators
     if (ch == ':' && peek == '=') { read; return Token(TokenType.assign, ":=") }
+    if (ch == ',') return Token(TokenType.comma, ch.toChar)
 
     throw parseErr("Invalid char 0x${ch.toHex} ($ch.toChar)")
   }
