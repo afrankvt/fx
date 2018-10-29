@@ -110,20 +110,20 @@ using dom
       }
       else
       {
+        val := a.val.toStr
+
         // TODO: move this to a compiler time thing...
-        vstr := a.val.toStr
-        six  := vstr.index("{{")
-        eix  := vstr.index("}}")
-        if (six == null || eix == null)
+        six  := val.index("{{")
+        eix  := val.index("}}")
+        while (six != null && eix != null)
         {
-          elem.setAttr(a.name, a.val)
+          name := val[(six+2)..<eix]
+          tval := resolveVar(name, data) ?: ""
+          val  = val.replace("{{$name}}", tval.toStr)
+          six  = val.index("{{", six+2)
+          eix  = val.index("}}", eix+2)
         }
-        else
-        {
-          name := vstr[(six+2)..<eix]
-          val  := resolveVar(name, data) ?: ""
-          elem.setAttr(a.name, vstr.replace("{{$name}}", val.toStr))
-        }
+        elem.setAttr(a.name, val)
       }
     }
 
