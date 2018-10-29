@@ -10,19 +10,24 @@ comp HelloWorld
     Int count
   }
 
-  update(Str msg)
-  {
-    if (msg == "inc") count++
-    else if (msg == "dec") count--
-  }
-
   template
   {
-    <p>The current value of <b>count</b> is <b>{{count}}</b></p>
-    <p>
-      <button fx-click="dec">--</button>
-      <button fx-click="inc">++</button>
-    </p>
+    <div>
+      <p>The current value of <b>count</b> is <b>{{count}}</b></p>
+      <p>
+        <button @click="dec">--</button>
+        <button @click="inc">++</button>
+      </p>
+    </div>
+  }
+
+  Void update(FxMsg msg)
+  {
+    switch (msg.name)
+    {
+      case "inc": count++
+      case "dec": count--
+    }
   }
 }
 ```
