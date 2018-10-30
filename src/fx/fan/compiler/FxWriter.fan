@@ -71,7 +71,7 @@ class FxWriter
       else
       {
         if (p.defVal != null) out.print(" := $p.defVal")
-        out.printLine(" { private set { &${p.name}=it; __dirty=true }}")
+        out.printLine(" { private set { &${p.name}=__setter(&${p.name}, it) }}")
       }
     }
 

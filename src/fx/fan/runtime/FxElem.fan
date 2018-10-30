@@ -35,12 +35,13 @@ using dom
   Void render()
   {
     // short-circuit if not modified
-// TODO: how does this work for things like modifiying lists?
-    //if (comp->__dirty == false) return
+    // if (!comp.__dirty) return
 
+    // re-render component
     data := comp.__data
     frag := comp.__vdom.toElem(comp, data)
     this.removeAll.add(frag)
+    // comp.__dirty = false
   }
 
   override Str toStr()

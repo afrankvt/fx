@@ -242,7 +242,7 @@ using dom
   {
     if (dir == "if" || dir == "ifnot")
     {
-      val  := data[expr]
+      val  := resolveVar(expr, data)
       cond := isTruthy(val)
       if (dir == "ifnot") cond = !cond
       if (cond)

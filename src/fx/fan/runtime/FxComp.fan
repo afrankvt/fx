@@ -97,13 +97,20 @@ using dom
     }
   }
 
+  ** Property setter handler.
+  protected Obj? __setter(Obj? oldval, Obj? newval)
+  {
+    if (oldval != newval) __dirty = true
+    // TODO: list/map updates...
+    return newval
+  }
+
   ** Delegate extern getter to parent.
   protected Obj? __getExtern(Str name) { parent.typeof.field(name).get(parent) }
 
   ** Delegate extern setter to parent.
   protected Void __setExtern(Str name, Obj val) { parent.typeof.field(name).set(parent, val) }
 
-  internal FxElem? __elem   := null   // bound FxElem instance
-  protected Str:Str __externs := [:]  // self:parent extern field name map
-  protected Bool __dirty := false     // TODO
+  internal FxElem? __elem := null  // bound FxElem instance
+  internal Bool __dirty   := true  // TODO: flag we need to re-render
 }
