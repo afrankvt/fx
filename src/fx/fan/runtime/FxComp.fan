@@ -26,16 +26,7 @@ using dom
   {
     __elem.children.each |k| { __pullFormVals(k) }
     this->onUpdate(FxMsg { it.name=name; it.data=data })
-    __elem?.render
-
-    // TODO: huuuuge hack; but update parents for now until we
-    // sort out how to fire off extern bound data props
-    p := __elem?.parent
-    while (p != null)
-    {
-      if (p is FxElem) ((FxElem)p).render
-      p = p.parent
-    }
+    FxRuntime.markDirty
   }
 
   ** Send a message to this component after the given internval.

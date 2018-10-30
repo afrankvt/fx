@@ -18,6 +18,7 @@ class Build : build::BuildPod
     ]
     depends = [
       "sys 1.0",
+      "concurrent 1.0",
       "compiler 1.0",
       "build 1.0",
       "graphics 1.0",
