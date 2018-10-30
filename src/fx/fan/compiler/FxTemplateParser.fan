@@ -77,9 +77,9 @@ internal class FxTemplateParser
   }
 
   ** Parse input stream.
-  FxDef[] parse()
+  CDef[] parse()
   {
-    defs := FxDef[,]
+    defs := CDef[,]
     TmToken? token
 
     while ((token = nextToken).isEos == false)
@@ -97,14 +97,14 @@ internal class FxTemplateParser
 //////////////////////////////////////////////////////////////////////////
 
   ** Parse an element or directive node.
-  private FxDef parseNode(TmToken pre)
+  private CDef parseNode(TmToken pre)
   {
     nodeType := pre.isBracketOpen ? typeElem : typeDir
     nodeName := nextToken(TmTokenType.identifier).val
-    binds    := FxBindDef[,]
-    attrs    := FxAttrDef[,]
-    events   := FxEventDef[,]
-    kids     := FxDef[,]
+    binds    := CBindDef[,]
+    attrs    := CAttrDef[,]
+    events   := CEventDef[,]
+    kids     := CDef[,]
 
     TmToken? token
     while ((token = nextToken).isEos == false)
@@ -126,15 +126,15 @@ internal class FxTemplateParser
           case '&':
             local  := name[1..-1]
             extern := val=="" ? local : val
-            binds.add(FxBindDef { it.local=local; it.extern=extern })
+            binds.add(CBindDef { it.local=local; it.extern=extern })
 
           case '@':
             event := name[1..-1]
             msg   := val
-            events.add(FxEventDef { it.event=event; it.msg=msg })
+            events.add(CEventDef { it.event=event; it.msg=msg })
 
           default:
-            attrs.add(FxAttrDef { it.name=name; it.val=val })
+            attrs.add(CAttrDef { it.name=name; it.val=val })
         }
         continue
       }
@@ -192,7 +192,7 @@ internal class FxTemplateParser
 
       if (token.isText)
       {
-        kids.add(FxTextNodeDef { it.text=token.val })
+        kids.add(CTextNodeDef { it.text=token.val })
         continue
       }
 
@@ -200,7 +200,7 @@ internal class FxTemplateParser
       {
         name := nextToken(TmTokenType.var).val
         nextToken(TmTokenType.varEnd)
-        kids.add(FxVarNodeDef { it.name=name })
+        kids.add(CVarNodeDef { it.name=name })
         continue
       }
 
@@ -208,7 +208,7 @@ internal class FxTemplateParser
     }
 
     if (nodeType == typeElem)
-      return FxNodeDef
+      return CNodeDef
       {
         it.tagName = nodeName
         it.binds   = binds
@@ -218,7 +218,7 @@ internal class FxTemplateParser
         it.podName = this.podName // just always set
       }
     else
-      return FxDirDef
+      return CDirDef
       {
         it.dir  = nodeName
         it.expr = attrs.join(" ") |a| { a.name } // TODO

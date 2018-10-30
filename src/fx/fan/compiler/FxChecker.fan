@@ -12,7 +12,7 @@
 class FxChecker
 {
   ** Constructor.
-  new make(FxDef[] defs)
+  new make(CDef[] defs)
   {
     this.defs = defs
   }
@@ -22,9 +22,9 @@ class FxChecker
   {
     defs.each |d|
     {
-      if (d is FxCompDef)
+      if (d is CCompDef)
       {
-        f := ((FxCompDef)d).funcs.find |f| { f.funcName == "onUpdate" }
+        f := ((CCompDef)d).funcs.find |f| { f.funcName == "onUpdate" }
         if (f != null && !f.isUpdate)
           throw err(d, "Invalid onUpdate signature != 'Void onUpdate(FxMsg)'")
       }
@@ -32,15 +32,15 @@ class FxChecker
   }
 
   ** Create error to indicate validation failed.
-  private Err err(FxDef def, Str msg)
+  private Err err(CDef def, Str msg)
   {
     Str? name
-    if (def is FxStructDef) name = def->name
-    if (def is FxCompDef)   name = def->name
+    if (def is CStructDef) name = def->name
+    if (def is CCompDef)   name = def->name
 
     // TODO: include source path for node def: /x/y/y/Foo.fx(x,y): msg
     return Err(name==null ? msg : "${name}: $msg")
   }
 
-  private FxDef[] defs
+  private CDef[] defs
 }

@@ -73,9 +73,9 @@ internal class FxParser
   }
 
   ** Parse input stream.
-  FxDef[] parse()
+  CDef[] parse()
   {
-    defs := FxDef[,]
+    defs := CDef[,]
     Token? token
 
     while ((token = nextToken).isEos == false)
@@ -98,10 +98,10 @@ internal class FxParser
 //////////////////////////////////////////////////////////////////////////
 
   ** Parse 'using' definition.
-  private FxDef parseUsing()
+  private CDef parseUsing()
   {
     pod := nextToken(TokenType.identifier).val
-    return FxUsingDef { it.pod=pod }
+    return CUsingDef { it.pod=pod }
   }
 
 //////////////////////////////////////////////////////////////////////////
@@ -109,10 +109,10 @@ internal class FxParser
 //////////////////////////////////////////////////////////////////////////
 
   ** Parse 'struct' definition.
-  private FxDef parseStruct()
+  private CDef parseStruct()
   {
     name  := nextToken(TokenType.typeName).val
-    props := FxPropDef[,]
+    props := CPropDef[,]
 
     nextToken(TokenType.braceOpen)
     token := nextToken
@@ -129,12 +129,12 @@ internal class FxParser
           defVal = parseToEol
           token  = nextToken
         }
-        props.add(FxPropDef { it.extern=false; it.type=ptype; it.name=pname; it.defVal=defVal })
+        props.add(CPropDef { it.extern=false; it.type=ptype; it.name=pname; it.defVal=defVal })
       }
       else throw unexpectedToken(token)
     }
 
-    return FxStructDef
+    return CStructDef
     {
       it.qname = "${podName}::$name"
       it.name  = name
@@ -147,13 +147,13 @@ internal class FxParser
 //////////////////////////////////////////////////////////////////////////
 
   ** Parse 'comp' definition.
-  private FxDef parseComp()
+  private CDef parseComp()
   {
-    FxDataDef? data
-    FxInitDef? init
-    FxStyleDef? style
-    FxTemplateDef? template
-    FxFuncDef[] funcs := [,]
+    CDataDef? data
+    CInitDef? init
+    CStyleDef? style
+    CTemplateDef? template
+    CFuncDef[] funcs := [,]
 
     name := nextToken(TokenType.typeName).val
 
@@ -173,22 +173,22 @@ internal class FxParser
       throw unexpectedToken(token)
     }
 
-    return FxCompDef
+    return CCompDef
     {
       it.qname    = "${podName}::$name"
       it.name     = name
-      it.data     = data     ?: FxDataDef {}
-      it.init     = init     ?: FxInitDef {}
-      it.style    = style    ?: FxStyleDef {}
-      it.template = template ?: FxTemplateDef {}
+      it.data     = data     ?: CDataDef {}
+      it.init     = init     ?: CInitDef {}
+      it.style    = style    ?: CStyleDef {}
+      it.template = template ?: CTemplateDef {}
       it.funcs    = funcs
     }
   }
 
   ** Parse a 'data' definition block.
-  private FxDef parseData()
+  private CDef parseData()
   {
-    props := FxPropDef[,]
+    props := CPropDef[,]
 
     nextToken(TokenType.braceOpen)
     token := nextToken
@@ -214,39 +214,39 @@ internal class FxParser
           defVal = parseToEol
           token  = nextToken
         }
-        props.add(FxPropDef { it.extern=extern; it.type=ptype; it.name=pname; it.defVal=defVal })
+        props.add(CPropDef { it.extern=extern; it.type=ptype; it.name=pname; it.defVal=defVal })
       }
       else throw unexpectedToken(token)
     }
 
-    return FxDataDef { it.props=props }
+    return CDataDef { it.props=props }
   }
 
   ** Parse a 'init' definition block.
-  private FxDef parseInit()
+  private CDef parseInit()
   {
     msg := parseRawBlock
-    return FxInitDef { it.msg=msg }
+    return CInitDef { it.msg=msg }
   }
 
   ** Parse a 'style' definition block.
-  private FxDef parseStyle()
+  private CDef parseStyle()
   {
     css := parseRawBlock
-    return FxStyleDef { it.css=css }
+    return CStyleDef { it.css=css }
   }
 
   ** Parse a 'template' definition block.
-  private FxDef parseTemplate()
+  private CDef parseTemplate()
   {
     start  := line
     markup := parseRawBlock
     nodes  := FxTemplateParser(podName, filename, Buf().print(markup).flip.in, start).parse
-    return FxTemplateDef { it.nodes=nodes }
+    return CTemplateDef { it.nodes=nodes }
   }
 
   ** Parse a 'func' definition block.
-  private FxDef parseFunc(Token token)
+  private CDef parseFunc(Token token)
   {
     // method sig
     retType  := token.val
@@ -266,7 +266,7 @@ internal class FxParser
     // method body
     funcBody := parseRawBlock
 
-    return FxFuncDef
+    return CFuncDef
     {
       it.retType  = retType
       it.funcName = funcName

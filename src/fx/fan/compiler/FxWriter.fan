@@ -11,13 +11,13 @@
 **
 class FxWriter
 {
-  new make(Str podName, FxDef[] defs)
+  new make(Str podName, CDef[] defs)
   {
     this.podName = podName
     this.defs    = defs
-    this.usings  = defs.findType(FxUsingDef#)
-    this.structs = defs.findType(FxStructDef#)
-    this.comps   = defs.findType(FxCompDef#)
+    this.usings  = defs.findType(CUsingDef#)
+    this.structs = defs.findType(CStructDef#)
+    this.comps   = defs.findType(CCompDef#)
   }
 
   ** Write a new Fantom source file to 'OutStream'
@@ -32,8 +32,8 @@ class FxWriter
     comps.each   |c| { writeComp(c, out) }
   }
 
-  ** Write FxStructDef as a Fantom class source.
-  private Void writeStruct(FxStructDef struct, OutStream out)
+  ** Write CStructDef as a Fantom class source.
+  private Void writeStruct(CStructDef struct, OutStream out)
   {
     out.printLine("@Js class $struct.name")
     out.printLine("{")
@@ -49,7 +49,7 @@ class FxWriter
   }
 
   ** Write FxComp as a Fantom class source.
-  private Void writeComp(FxCompDef comp, OutStream out)
+  private Void writeComp(CCompDef comp, OutStream out)
   {
     // comp type
     out.printLine("@Js class $comp.name : FxComp")
@@ -134,14 +134,14 @@ class FxWriter
   }
 
   ** Write vdom.
-  private Void writeVnode(FxDef node, OutStream out, Int indent)
+  private Void writeVnode(CDef node, OutStream out, Int indent)
   {
     sp := Str.spaces(indent)
     switch (node.typeof)
     {
 // TODO: cleanup this code to be more readable...
-      case FxNodeDef#:
-        FxNodeDef e := node
+      case CNodeDef#:
+        CNodeDef e := node
         out.print(sp).printLine("FxVelem {")
         out.print(sp).printLine("  it.tag = $e.tagName.toCode")
         // don't think we need this in js
@@ -187,26 +187,26 @@ class FxWriter
         }
         out.print(sp).print("}")
 
-      // case FxBindDef#:
-      //   FxBindDef b := node
+      // case CBindDef#:
+      //   CBindDef b := node
       //   out.print(sp).print("FxVbind { it.local=${b.local.toCode}; it.extern=${b.extern.toCode} }")
 
-      case FxAttrDef#:
-        FxAttrDef a := node
+      case CAttrDef#:
+        CAttrDef a := node
         out.print(sp).printLine("FxVattr { ")
         out.print(sp).printLine("  it.name=${a.name.toCode}")
         out.print(sp).printLine("  it.val=${a.val.toStr.toCode}")
         out.print(sp).print("}")
 
-      case FxEventDef#:
-        FxEventDef e := node
+      case CEventDef#:
+        CEventDef e := node
         out.print(sp).printLine("FxVevent { ")
         out.print(sp).printLine("  it.event=${e.event.toCode}")
         out.print(sp).printLine("  it.msg=${e.msg.toStr.toCode}")
         out.print(sp).print("}")
 
-      case FxDirDef#:
-        FxDirDef d := node
+      case CDirDef#:
+        CDirDef d := node
         out.print(sp).printLine("FxVdir {")
         out.print(sp).printLine("  it.dir=${d.dir.toCode}")
         out.print(sp).printLine("  it.expr=${d.expr.toCode}")
@@ -222,19 +222,19 @@ class FxWriter
         }
         out.print(sp).print("}")
 
-      case FxTextNodeDef#:
-        FxTextNodeDef t := node
+      case CTextNodeDef#:
+        CTextNodeDef t := node
         out.print(sp).print("FxVtext { it.text=${t.text.toCode} }")
 
-      case FxVarNodeDef#:
-        FxVarNodeDef v := node
+      case CVarNodeDef#:
+        CVarNodeDef v := node
         out.print(sp).print("FxVexpr { it.expr=${v.name.toCode} }")
     }
   }
 
   const Str podName
-  const FxDef[] defs
-  const FxUsingDef[] usings
-  const FxStructDef[] structs
-  const FxCompDef[] comps
+  const CDef[] defs
+  const CUsingDef[] usings
+  const CStructDef[] structs
+  const CCompDef[] comps
 }

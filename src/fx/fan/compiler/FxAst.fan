@@ -7,20 +7,20 @@
 //
 
 *************************************************************************
-** FxDef
+** CDef
 *************************************************************************
 
-abstract const class FxDef
+abstract const class CDef
 {
   // TODO
   // FxLoc loc { file, line }
 }
 
 *************************************************************************
-** FxUsingDef
+** CUsingDef
 *************************************************************************
 
-const class FxUsingDef : FxDef
+const class CUsingDef : CDef
 {
   new make(|This| f) { f(this) }
 
@@ -28,40 +28,40 @@ const class FxUsingDef : FxDef
 }
 
 *************************************************************************
-** FxStructDef
+** CStructDef
 *************************************************************************
 
-const class FxStructDef : FxDef
+const class CStructDef : CDef
 {
   new make(|This| f) { f(this) }
 
   const Str qname
   const Str name
-  const FxPropDef[] props
+  const CPropDef[] props
 }
 
 *************************************************************************
-** FxCompDef
+** CCompDef
 *************************************************************************
 
-const class FxCompDef : FxDef
+const class CCompDef : CDef
 {
   new make(|This| f) { f(this) }
 
   const Str qname
   const Str name
-  const FxDataDef data
-  const FxInitDef init
-  const FxStyleDef style
-  const FxTemplateDef template
-  const FxFuncDef[] funcs
+  const CDataDef data
+  const CInitDef init
+  const CStyleDef style
+  const CTemplateDef template
+  const CFuncDef[] funcs
 }
 
 *************************************************************************
 ** FxDataProp
 *************************************************************************
 
-const class FxPropDef : FxDef
+const class CPropDef : CDef
 {
   new make(|This| f)
   {
@@ -83,21 +83,21 @@ const class FxPropDef : FxDef
 }
 
 *************************************************************************
-** FxDataDef
+** CDataDef
 *************************************************************************
 
-const class FxDataDef : FxDef
+const class CDataDef : CDef
 {
   new make(|This| f) { f(this) }
 
-  const FxPropDef[] props := [,]
+  const CPropDef[] props := [,]
 }
 
 *************************************************************************
-** FxInitDef
+** CInitDef
 *************************************************************************
 
-const class FxInitDef : FxDef
+const class CInitDef : CDef
 {
   new make(|This| f) { f(this) }
 
@@ -106,10 +106,10 @@ const class FxInitDef : FxDef
 }
 
 *************************************************************************
-** FxFuncDef
+** CFuncDef
 *************************************************************************
 
-const class FxFuncDef : FxDef
+const class CFuncDef : CDef
 {
   new make(|This| f) { f(this) }
 
@@ -127,10 +127,10 @@ const class FxFuncDef : FxDef
 }
 
 *************************************************************************
-** FxStyleDef
+** CStyleDef
 *************************************************************************
 
-const class FxStyleDef : FxDef
+const class CStyleDef : CDef
 {
   new make(|This| f) { f(this) }
 
@@ -138,34 +138,34 @@ const class FxStyleDef : FxDef
 }
 
 *************************************************************************
-** FxTemplateDef
+** CTemplateDef
 *************************************************************************
 
-const class FxTemplateDef : FxDef
+const class CTemplateDef : CDef
 {
   new make(|This| f) { f(this) }
 
-  const FxDef[] nodes
+  const CDef[] nodes
 }
 
 *************************************************************************
-** FxDirDef
+** CDirDef
 *************************************************************************
 
-const class FxDirDef : FxDef
+const class CDirDef : CDef
 {
   new make(|This| f) { f(this) }
 
   const Str dir
   const Str expr
-  const FxDef[] kids
+  const CDef[] kids
 }
 
 *************************************************************************
-** FxNodeDef
+** CNodeDef
 *************************************************************************
 
-const class FxNodeDef : FxDef
+const class CNodeDef : CDef
 {
   new make(|This| f)
   {
@@ -174,10 +174,10 @@ const class FxNodeDef : FxDef
   }
 
   const Str tagName
-  const FxBindDef[] binds
-  const FxAttrDef[] attrs
-  const FxEventDef[] events
-  const FxDef[] kids
+  const CBindDef[] binds
+  const CAttrDef[] attrs
+  const CEventDef[] events
+  const CDef[] kids
   const Str? podName
 
   Bool isComp() { tagName[0].isUpper }
@@ -185,10 +185,10 @@ const class FxNodeDef : FxDef
 }
 
 *************************************************************************
-** FxBindDef
+** CBindDef
 *************************************************************************
 
-const class FxBindDef : FxDef
+const class CBindDef : CDef
 {
   new make(|This| f) { f(this) }
 
@@ -197,10 +197,10 @@ const class FxBindDef : FxDef
 }
 
 *************************************************************************
-** FxAttrDef
+** CAttrDef
 *************************************************************************
 
-const class FxAttrDef : FxDef
+const class CAttrDef : CDef
 {
   new make(|This| f) { f(this) }
 
@@ -209,10 +209,10 @@ const class FxAttrDef : FxDef
 }
 
 *************************************************************************
-** FxEventDef
+** CEventDef
 *************************************************************************
 
-const class FxEventDef : FxDef
+const class CEventDef : CDef
 {
   new make(|This| f) { f(this) }
 
@@ -221,10 +221,10 @@ const class FxEventDef : FxDef
 }
 
 *************************************************************************
-** FxTextNodeDef
+** CTextNodeDef
 *************************************************************************
 
-const class FxTextNodeDef : FxDef
+const class CTextNodeDef : CDef
 {
   new make(|This| f) { f(this) }
 
@@ -232,10 +232,10 @@ const class FxTextNodeDef : FxDef
 }
 
 *************************************************************************
-** FxVarNodeDef
+** CVarNodeDef
 *************************************************************************
 
-const class FxVarNodeDef : FxDef
+const class CVarNodeDef : CDef
 {
   new make(|This| f) { f(this) }
 
