@@ -47,11 +47,11 @@ abstract class BuildFxPod : BuildPod
         if (file.ext != "fx") return
         try
         {
-          ast := FxParser(podName, file.name, file.in).parse
+          ast := CParser(podName, file.name, file.in).parse
           // ast.each |n| { n.dump }
-          FxChecker(ast).run
+          CChecker(ast).run
           out := (outDir + `${file.basename}.fan`).out
-          FxWriter(podName, ast).write(out)
+          CWriter(podName, ast).write(out)
           out.sync.close
         }
         catch (Err err)

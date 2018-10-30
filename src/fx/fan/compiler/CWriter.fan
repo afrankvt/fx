@@ -7,9 +7,9 @@
 //
 
 **
-** FxWriter
+** CWriter
 **
-class FxWriter
+class CWriter
 {
   new make(Str podName, CDef[] defs)
   {

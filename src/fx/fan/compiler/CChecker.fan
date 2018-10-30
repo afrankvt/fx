@@ -7,9 +7,9 @@
 //
 
 **
-** FxChecker validates a FxAst tree.
+** CChecker validates a compiler CAst tree.
 **
-class FxChecker
+class CChecker
 {
   ** Constructor.
   new make(CDef[] defs)

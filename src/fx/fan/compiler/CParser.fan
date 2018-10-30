@@ -54,10 +54,10 @@ internal const class Token
 }
 
 *************************************************************************
-** FxParser
+** CParser
 *************************************************************************
 
-internal class FxParser
+internal class CParser
 {
 
 //////////////////////////////////////////////////////////////////////////
@@ -241,7 +241,7 @@ internal class FxParser
   {
     start  := line
     markup := parseRawBlock
-    nodes  := FxTemplateParser(podName, filename, Buf().print(markup).flip.in, start).parse
+    nodes  := CTemplateParser(podName, filename, Buf().print(markup).flip.in, start).parse
     return CTemplateDef { it.nodes=nodes }
   }
 
