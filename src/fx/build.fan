@@ -29,7 +29,7 @@ class Build : build::BuildPod
       `fan/`,
       `fan/build/`,
       `fan/compiler/`,
-      `fan/runtime/`
+      `fan/runtime/`,
     ]
   }
 }

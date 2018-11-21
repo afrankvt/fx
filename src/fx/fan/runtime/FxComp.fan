@@ -30,9 +30,10 @@ using dom
   }
 
   ** Send a message to this component after the given internval.
-  Void sendLater(Obj msg, Duration timeout)
+// TODO: data
+  Void sendLater(Str name, Duration timeout)
   {
-    Win.cur.setTimeout(timeout) { send(msg) }
+    Win.cur.setTimeout(timeout) { send(name) }
   }
 
 //////////////////////////////////////////////////////////////////////////
@@ -44,7 +45,45 @@ using dom
   // do not define an __onMsg method so subclasses can parameterize args
   // virtual Void __onMsg(...) {}
 
-  protected abstract FxVdom __vdom()
+  //protected abstract FxVdom __vdom()
+
+  ** Template AST; CWriter will generate the __tdeff field.
+  internal TDef __tdef() { this->__tdeff }
+
+  ** Render component.
+  internal Void __render()
+  {
+    // TODO: optimize static attributes and children; if set to 'const'
+    // or some type of flag; we can safely skip that check at runtime
+
+    orig    := __elem
+    vtree   := VDefRender.render(__tdef, __data)
+    patches := VDiff.diff(__vtree, vtree)
+//_dump(vtree)
+    elem := VPatcher.patch(this, __elem, patches)
+//Win.cur.log(elem)
+    elem.setAttr("fx-comp", typeof.qname)
+    if (orig != null) orig.parent.replace(orig, elem)
+    this.__vtree = vtree
+    this.__elem  = elem
+  }
+
+private Void _dump(VNode n)
+{
+  // find depth
+  d := 0
+  VNode? p := n.parent
+  while (p != null) { d++; p=p.parent }
+
+  x := ""
+  if (n is VElem) { x = " <${((VElem)n).tag}>" }
+  if (n is VText) { x = " ${((VText)n).text}" }
+
+  echo(Str.spaces(d*2) + "${n.index}: ${n.typeof}" + x)
+
+
+  n.children.each |k| { _dump(k) }
+}
 
   ** Get data map based on current state.
   internal Str:Obj? __data()
@@ -102,6 +141,7 @@ using dom
   ** Delegate extern setter to parent.
   protected Void __setExtern(Str name, Obj val) { parent.typeof.field(name).set(parent, val) }
 
-  internal FxElem? __elem := null  // bound FxElem instance
-  internal Bool __dirty   := true  // TODO: flag we need to re-render
+  private VElem? __vtree := VDiff.nullTree  // current virtual tree
+  internal Elem? __elem  := null           // current dom elem
+  internal Bool __dirty  := true           // TODO: flag we need to re-render
 }

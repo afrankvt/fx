@@ -16,71 +16,78 @@ using dom
 {
   static
   {
-    // register onload handler to boot
-    Win.cur.onEvent("load", false) { FxRuntime.boot }
+    // register onload handler to boot runtime
+    Win.cur.onEvent("load", false)
+    {
+      fx := FxRuntime {}
+      fx.boot
+    }
   }
 
-  ** Boot the FX runtime in browser.
-  static Void boot()
-  {
-    ts := Duration.now
+  ** Get runtime instance for VM.
+  private static FxRuntime cur() { (curRef.val as Unsafe).val }
+  private static const AtomicRef curRef := AtomicRef(null)
 
-    // setup initial comps from HTML source
-    comps := Win.cur.doc.querySelectorAllType("[fx-comp]", FxElem#)
-    comps.each |FxElem c| { c.mount; c.render; c.init }
+  ** Mark component tree as dirty for render.
+  internal static Void markDirty() { FxRuntime.cur.dirty = true }
+
+  ** Private ctor.
+  private new make()
+  {
+    FxRuntime.curRef.compareAndSet(null, Unsafe(this))
+  }
+
+  // TODO: how should this work
+  @NoDoc static Void _mount(Elem elem)
+  {
+    FxRuntime.cur.mount(elem)
+  }
+
+  ** Boot runtime.
+  private Void boot()
+  {
+    // mount top level comps
+    elems := Win.cur.doc.querySelectorAll("[fx-comp]")
+    elems.each |e| { mount(e) }
 
     // setup renderer loop
     Win.cur.reqAnimationFrame { render }
-
-    dur := (Duration.now - ts).toMillis
-    log.info("FxRuntime booted ($comps.size comps, ${dur}ms)")
   }
 
-  ** Mark component tree as dirty for render.
-  internal static Void markDirty() { dirty.val = true }
-  private static const AtomicBool dirty := AtomicBool(false)
+  ** Mount fxcomp into runtime.
+  private Void mount(Elem elem)
+  {
+    qname := elem.attr("fx-comp")
+    comp  := (FxComp)Type.find(qname).make
+    comp.__elem = elem
+    comp.__render
+
+    msg := comp.__init
+    if (msg != null) comp.send(msg)
+
+    comps.add(comp)
+  }
+
+  // TODO: some mech for unmount?
 
   ** Render vdom if needed.
-  private static Void render()
+  private Void render()
   {
     try
     {
-      if (!dirty.val) return
+      if (!dirty) return
 
       ts := Duration.now
-      elems := Win.cur.doc.querySelectorAllType("[fx-comp]", FxElem#)
-      elems.each |FxElem e| { e.render }
-      dirty.val = false
+      comps.each |c| { c.__render }
 
       dur := (Duration.now - ts).toMillis
-      log.info("FxRuntime.render ($elems.size comps, ${dur}ms)")
+      log.info("FxRuntime.render ($comps.size comps, ${dur}ms)")
     }
     finally
     {
+      dirty = false
       Win.cur.reqAnimationFrame { render }
     }
-  }
-
- ** Create a new FX element dom node.
-// TODO: feel like this method goes away somehow...
- @NoDoc static Elem elem(Obj? parentComp, Str qname, Str:Str attrs)
- {
-    elem := FxElem { it.setAttr("fx-comp", qname) }
-    elem.mount
-    elem.comp.parent = parentComp
-    attrs.each |v,n| { elem.setAttr(n, v) }
-    // attrs.each |v,n|
-    // {
-    //   if (n.startsWith("fx-bind"))
-    //   {
-    //     self  := n["fx-bind:".size..-1]
-    //     field := elem.comp.typeof.field("__extern_${self}")
-    //     field.set(elem.comp, parentComp.trap(v))
-    //   }
-    // }
-    elem.render
-    elem.init
-    return elem
   }
 
   ** Dump struct field and values to Str.
@@ -91,7 +98,7 @@ using dom
     struct.typeof.fields.each |f|
     {
       if (!f.name.startsWith("__"))
-        buf.add(f.name).addChar('=').add(f.get(struct) ?: "")
+        buf.add(" ").add(f.name).addChar('=').add(f.get(struct) ?: "")
     }
     buf.add(" }")
     return buf.toStr
@@ -99,4 +106,7 @@ using dom
 
   ** Fx log instance.
   static const Log log := Log.get("fx")
+
+  private FxComp[] comps := [,]     // top-level comps
+  private Bool dirty     := false   // render dirty flag
 }

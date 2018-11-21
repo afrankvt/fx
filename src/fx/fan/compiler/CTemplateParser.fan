@@ -101,9 +101,9 @@ internal class CTemplateParser
   {
     nodeType := pre.isBracketOpen ? typeElem : typeDir
     nodeName := nextToken(TmTokenType.identifier).val
-    binds    := CBindDef[,]
-    attrs    := CAttrDef[,]
-    events   := CEventDef[,]
+    binds    := CTBindDef[,]
+    attrs    := CTAttrDef[,]
+    events   := CTEventDef[,]
     kids     := CDef[,]
 
     TmToken? token
@@ -114,7 +114,17 @@ internal class CTemplateParser
       {
         name := token.val
         Obj val := ""
+        Str? cond := null
+        Str? expr := null
 
+        if (name == "if" || name == "ifnot")
+        {
+          cond = name
+          expr = nextToken(TmTokenType.identifier).val
+          name = nextToken(TmTokenType.identifier).val
+        }
+
+        // TODO: fix this to allow spaces before/after...
         if (peek == '=')
         {
           nextToken(TmTokenType.equal)
@@ -126,15 +136,15 @@ internal class CTemplateParser
           case '&':
             local  := name[1..-1]
             extern := val=="" ? local : val
-            binds.add(CBindDef { it.local=local; it.extern=extern })
+            binds.add(CTBindDef { it.local=local; it.extern=extern })
 
           case '@':
             event := name[1..-1]
             msg   := val
-            events.add(CEventDef { it.event=event; it.msg=msg })
+            events.add(CTEventDef { it.event=event; it.msg=msg })
 
           default:
-            attrs.add(CAttrDef { it.name=name; it.val=val })
+            attrs.add(CTAttrDef { it.name=name; it.val=val; it.cond=cond; it.expr=expr })
         }
         continue
       }
@@ -192,7 +202,7 @@ internal class CTemplateParser
 
       if (token.isText)
       {
-        kids.add(CTextNodeDef { it.text=token.val })
+        kids.add(CTTextDef { it.text=token.val })
         continue
       }
 
@@ -200,7 +210,7 @@ internal class CTemplateParser
       {
         name := nextToken(TmTokenType.var).val
         nextToken(TmTokenType.varEnd)
-        kids.add(CVarNodeDef { it.name=name })
+        kids.add(CTVarDef { it.name=name })
         continue
       }
 
@@ -208,22 +218,33 @@ internal class CTemplateParser
     }
 
     if (nodeType == typeElem)
-      return CNodeDef
+    {
+      if (nodeName[0].isUpper)
       {
-        it.tagName = nodeName
-        it.binds   = binds
-        it.attrs   = attrs
-        it.events  = events
-        it.kids    = kids
-        it.podName = this.podName // just always set
+        qname := "${podName}::${nodeName}"
+        attrs.add(CTAttrDef { it.name="fx-comp"; it.val=qname })
+        nodeName = "div"
       }
+
+      return CTElemDef
+      {
+        it.tagName  = nodeName
+        it.binds    = binds
+        it.attrs    = attrs
+        it.events   = events
+        it.children = kids
+        it.podName  = this.podName // just always set
+      }
+    }
     else
-      return CDirDef
+    {
+      return CTDirDef
       {
         it.dir  = nodeName
         it.expr = attrs.join(" ") |a| { a.name } // TODO
-        it.kids = kids
+        it.children = kids
       }
+    }
   }
 
 //////////////////////////////////////////////////////////////////////////

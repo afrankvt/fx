@@ -149,23 +149,23 @@ const class CTemplateDef : CDef
 }
 
 *************************************************************************
-** CDirDef
+** CTDirDef
 *************************************************************************
 
-const class CDirDef : CDef
+const class CTDirDef : CDef
 {
   new make(|This| f) { f(this) }
 
   const Str dir
   const Str expr
-  const CDef[] kids
+  const CDef[] children
 }
 
 *************************************************************************
-** CNodeDef
+** CTElemDef
 *************************************************************************
 
-const class CNodeDef : CDef
+const class CTElemDef : CDef
 {
   new make(|This| f)
   {
@@ -174,10 +174,10 @@ const class CNodeDef : CDef
   }
 
   const Str tagName
-  const CBindDef[] binds
-  const CAttrDef[] attrs
-  const CEventDef[] events
-  const CDef[] kids
+  const CTBindDef[] binds
+  const CTAttrDef[] attrs
+  const CTEventDef[] events
+  const CDef[] children
   const Str? podName
 
   Bool isComp() { tagName[0].isUpper }
@@ -185,10 +185,10 @@ const class CNodeDef : CDef
 }
 
 *************************************************************************
-** CBindDef
+** CTBindDef
 *************************************************************************
 
-const class CBindDef : CDef
+const class CTBindDef : CDef
 {
   new make(|This| f) { f(this) }
 
@@ -197,22 +197,24 @@ const class CBindDef : CDef
 }
 
 *************************************************************************
-** CAttrDef
+** CTAttrDef
 *************************************************************************
 
-const class CAttrDef : CDef
+const class CTAttrDef : CDef
 {
   new make(|This| f) { f(this) }
 
-  const Str name  // attr name
-  const Obj val   // attr value
+  const Str name   // attr name
+  const Obj val    // attr value
+  const Str? cond  // if | if-not
+  const Str? expr  // cond expr to eval at runtime
 }
 
 *************************************************************************
-** CEventDef
+** CTEventDef
 *************************************************************************
 
-const class CEventDef : CDef
+const class CTEventDef : CDef
 {
   new make(|This| f) { f(this) }
 
@@ -221,10 +223,10 @@ const class CEventDef : CDef
 }
 
 *************************************************************************
-** CTextNodeDef
+** CTTextNodeDef
 *************************************************************************
 
-const class CTextNodeDef : CDef
+const class CTTextDef : CDef
 {
   new make(|This| f) { f(this) }
 
@@ -232,10 +234,10 @@ const class CTextNodeDef : CDef
 }
 
 *************************************************************************
-** CVarNodeDef
+** CTVarNodeDef
 *************************************************************************
 
-const class CVarNodeDef : CDef
+const class CTVarDef : CDef
 {
   new make(|This| f) { f(this) }
 

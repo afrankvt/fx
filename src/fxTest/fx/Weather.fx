@@ -31,10 +31,12 @@ comp Weather
 
   template
   {
-    <h2 fx-if="err" style="color:#e74c3c">{{err.msg}}</h2>
-    <h2 fx-ifnot:class:loading="geo">{{geoStatus}}</h2>
-    <h2 fx-ifnot:class:loading="wxStationInfo">{{wxStatus}}</h2>
-    <p>{{wxStationInfo}}</p>
+    <div>
+      <h2 if err style="color:#e74c3c">{{err.msg}}</h2>
+      <h2 ifnot loading class="geo">{{geoStatus}}</h2>
+      <h2 ifnot loading class="wxStationInfo">{{wxStatus}}</h2>
+      <p>{{wxStationInfo}}</p>
+    </div>
   }
 
   Void onUpdate(FxMsg msg)
