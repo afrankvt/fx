@@ -32,10 +32,10 @@ comp Weather
   template
   {
     <div>
-      <h2 if err style="color:#e74c3c">{{err.msg}}</h2>
-      <h2 ifnot loading class="geo">{{geoStatus}}</h2>
-      <h2 ifnot loading class="wxStationInfo">{{wxStatus}}</h2>
-      <p>{{wxStationInfo}}</p>
+      <h2 if err style="color:#e74c3c">{err.msg}</h2>
+      <h2 ifnot loading class="geo">{geoStatus}</h2>
+      <h2 ifnot loading class="wxStationInfo">{wxStatus}</h2>
+      <p>{wxStationInfo}</p>
     </div>
   }
 

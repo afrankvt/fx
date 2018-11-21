@@ -47,7 +47,7 @@ comp InventoryMgr
       // flash
       [if flash]
         <div class="flash">
-          {{flash}} <span @click="dismiss-flash">X</span>
+          {flash} <span @click="dismiss-flash">X</span>
         </div>
       [/if]
 
@@ -164,9 +164,9 @@ comp InventorySidebar
     <div>
       [for item,index in items]
         <div class="list-item" fx-if:item.selected:class="selected"
-             @click="select [index:{{index}}]">
-          {{index}}: {{item.name}}
-          <span class="price">${{item.price}}</span>
+             @click="select [index:{index}]">
+          {index}: {item.name}
+          <span class="price">${item.price}</span>
         </div>
       [/for]
     </div>

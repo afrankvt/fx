@@ -7,7 +7,7 @@ comp Clock
 
   template
   {
-    <h2>The current time is {{time}}</h2>
+    <h2>The current time is {time}</h2>
   }
 
   init { "tick" }

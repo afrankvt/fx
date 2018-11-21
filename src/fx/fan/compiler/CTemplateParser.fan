@@ -346,8 +346,8 @@ internal class CTemplateParser
     if (ch == '/') return TmToken(TmTokenType.slash, ch.toChar)
 
     // vars
-    if (ch == '{' && peek == '{') { in.read; scope=scopeVar;   return TmToken(TmTokenType.varStart, "{{") }
-    if (ch == '}' && peek == '}') { in.read; scope=scopeChild; return TmToken(TmTokenType.varEnd,   "}}") }
+    if (ch == '{') { scope=scopeVar;   return TmToken(TmTokenType.varStart, "{{") }
+    if (ch == '}') { scope=scopeChild; return TmToken(TmTokenType.varEnd,   "}}") }
 
     // operators
     if (ch == '=') return TmToken(TmTokenType.equal, ch.toChar)
@@ -361,7 +361,7 @@ internal class CTemplateParser
         ch = read
 
         // check for inline vardefs
-        if (ch == '{' && peek == '{')
+        if (ch == '{')
         {
           in.unread(ch)
           return TmToken(TmTokenType.text, buf.toStr)
