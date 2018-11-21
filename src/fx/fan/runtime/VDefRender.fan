@@ -68,15 +68,15 @@ using dom
           val := t.val.toStr
 
           // TODO: move this to a compiler time thing...
-          six  := val.index("{{")
-          eix  := val.index("}}")
+          six  := val.index("{")
+          eix  := val.index("}")
           while (six != null && eix != null)
           {
-            expr := val[(six+2)..<eix]
+            expr := val[(six+1)..<eix]
             tval := resolveExpr(expr, data) ?: ""
-            val  = val.replace("{{$expr}}", tval.toStr)
-            six  = val.index("{{", six+2)
-            eix  = val.index("}}", eix+2)
+            val  = val.replace("{$expr}", tval.toStr)
+            six  = val.index("{", six+1)
+            eix  = val.index("}", eix+1)
           }
 
           return VAttr { it.name=t.name; it.val=val }
