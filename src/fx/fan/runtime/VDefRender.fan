@@ -96,7 +96,7 @@ using dom
             y := kv.split(':')
             k := y[0]
             Obj? v := y[1]
-            if (v.toStr[0] == '{') v = resolveExpr(v.toStr[2..-3], data)
+            if (v.toStr[0] == '{') v = resolveExpr(v.toStr[1..-2], data)
             edat[k] = v
           }
         }
