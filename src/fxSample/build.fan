@@ -6,8 +6,8 @@ class Build : fx::BuildFxPod
 {
   new make()
   {
-    podName = "fxTest"
-    summary = "Tests for FX framework"
+    podName = "fxSample"
+    summary = "Samples for FX framework"
     version = Version("0.1")
     meta = [
       "proj.name":    "FX: Fantom JavaScript Framework",
@@ -27,6 +27,6 @@ class Build : fx::BuildFxPod
       "fx 0+",
     ]
     srcDirs = [`fan/`]
-    fxDirs = [`fx/`] //, `fx/acctMgr/`]
+    fxDirs = [`fx/`]
   }
 }
