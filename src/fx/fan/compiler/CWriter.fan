@@ -100,11 +100,6 @@ class CWriter
     out.printLine("     dom::Win.cur.addStyleRules($style.toStr.toCode)")
     out.printLine("  }")
 
-    // // template
-    // out.printLine("  protected override const FxVdom __vdom := FxVdom { it.root = ")
-    // writeVnode(comp.template.nodes.first, out, 4)
-    // out.printLine("\n  }")
-
     // template
     out.printLine("  private const TElemDef __tdeff := ")
     writeTDef(comp.template.nodes.first, out, 4)
@@ -137,107 +132,6 @@ class CWriter
     // end class
     out.printLine("}")
   }
-
-  /*
-  ** Write vdom.
-  private Void writeVnode(CDef node, OutStream out, Int indent)
-  {
-    sp := Str.spaces(indent)
-    switch (node.typeof)
-    {
-// TODO: cleanup this code to be more readable...
-      case CTElemDef#:
-        CTElemDef e := node
-        out.print(sp).printLine("FxVelem {")
-        out.print(sp).printLine("  it.tag = $e.tagName.toCode")
-        // don't think we need this in js
-        // if (e.binds.size > 0)
-        // {
-        //   out.print(sp).printLine("  it.binds = [")
-        //   e.binds.each |b|
-        //   {
-        //     writeVnode(b, out, indent+4)
-        //     out.printLine(",")
-        //   }
-        //   out.print(sp).printLine("  ]")
-        // }
-        if (e.attrs.size > 0)
-        {
-          out.print(sp).printLine("  it.attrs = [")
-          e.attrs.each |a|
-          {
-            writeVnode(a, out, indent+4)
-            out.printLine(",")
-          }
-          out.print(sp).printLine("  ]")
-        }
-        if (e.events.size > 0)
-        {
-          out.print(sp).printLine("  it.events = [")
-          e.events.each |v|
-          {
-            writeVnode(v, out, indent+4)
-            out.printLine(",")
-          }
-          out.print(sp).printLine("  ]")
-        }
-        if (e.children.size > 0)
-        {
-          out.print(sp).printLine("  it.children = [")
-          e.children.each |k|
-          {
-            writeVnode(k, out, indent+4)
-            out.printLine(",")
-          }
-          out.print(sp).printLine("  ]")
-        }
-        out.print(sp).print("}")
-
-      // case CBindDef#:
-      //   CBindDef b := node
-      //   out.print(sp).print("FxVbind { it.local=${b.local.toCode}; it.extern=${b.extern.toCode} }")
-
-      case CTAttrDef#:
-        CTAttrDef a := node
-        out.print(sp).printLine("FxVattr { ")
-        out.print(sp).printLine("  it.name=${a.name.toCode}")
-        out.print(sp).printLine("  it.val=${a.val.toStr.toCode}")
-        out.print(sp).print("}")
-
-      case CTEventDef#:
-        CTEventDef e := node
-        out.print(sp).printLine("FxVevent { ")
-        out.print(sp).printLine("  it.event=${e.event.toCode}")
-        out.print(sp).printLine("  it.msg=${e.msg.toStr.toCode}")
-        out.print(sp).print("}")
-
-      case CTDirDef#:
-        CTDirDef d := node
-        out.print(sp).printLine("FxVdir {")
-        out.print(sp).printLine("  it.dir=${d.dir.toCode}")
-        out.print(sp).printLine("  it.expr=${d.expr.toCode}")
-        if (d.children.size > 0)
-        {
-          out.print(sp).printLine("  it.children = [")
-          d.children.each |k|
-          {
-            writeVnode(k, out, indent+4)
-            out.printLine(",")
-          }
-          out.print(sp).printLine("  ]")
-        }
-        out.print(sp).print("}")
-
-      case CTTextDef#:
-        CTTextDef t := node
-        out.print(sp).print("FxVtext { it.text=${t.text.toCode} }")
-
-      case CTVarDef#:
-        CTVarDef v := node
-        out.print(sp).print("FxVexpr { it.expr=${v.name.toCode} }")
-    }
-  }
-  */
 
   ** Write template def tree.
   private Void writeTDef(CDef def, OutStream out, Int indent)
