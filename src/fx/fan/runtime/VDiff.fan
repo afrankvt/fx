@@ -68,17 +68,52 @@ using dom
       b.children.each |kb| { patches.add(VPatch { it.op="add";    it.a=a; it.b=kb }) }
     }
 
-    if (a.attrs.size == b.attrs.size)
+    diffAttrs(a, b, patches)
+    // diffEvents
+
+    return patches
+  }
+
+  private static VPatch[] diffAttrs(VElem ae, VElem be, VPatch[] patches)
+  {
+    // TODO: should probably move some of this directly
+    // into VNode to optimize the map creation/memory use
+
+    amap := Str:VAttr[:]
+    bmap := Str:VAttr[:]
+
+    be.attrs.each |bv|
     {
-      a.attrs.size.times |i|
+      if (bv.val.size == 0) return
+      bmap.add(toKey(bv), bv)
+    }
+
+    ae.attrs.each |av|
+    {
+      if (av.val.size == 0) return
+
+      ak := toKey(av)
+      amap.add(ak, av)
+      bv := bmap[ak]
+
+      if (bv == null)
       {
-        aa := a.attrs[i]
-        ab := b.attrs[i]
-        if (aa.name != ab.name || aa.val != ab.val)
-          patches.add(VPatch { it.op="updateAttr"; it.b=b; it.attrName=ab.name; it.attrVal=ab.val })
+        // add attr
+        patches.add(VPatch { it.op="removeAttr"; it.b=be; it.attrName=av.name; it.attrVal=av.val })
+      }
+      else if (av.val != bv.val)
+      {
+        // update attr
+        patches.add(VPatch { it.op="updateAttr"; it.b=be; it.attrName=bv.name; it.attrVal=bv.val })
       }
     }
-    else echo("TODO-attr")
+
+    // check for new attrs to add
+    bmap.each |bv|
+    {
+      if (amap.containsKey(toKey(bv)) == false)
+        patches.add(VPatch { it.op="addAttr"; it.b=be; it.attrName=bv.name; it.attrVal=bv.val })
+    }
 
     return patches
   }
@@ -89,6 +124,12 @@ using dom
     // todo?
     if (a.text != b.text) patches.add(VPatch { it.op="replace"; it.a=a; it.b=b })
     return patches
+  }
+
+  private static Str toKey(VAttr v)
+  {
+    if (v.name == "class") return "class_${v.val}"
+    return v.name
   }
 
   static const VNode nullTree := VElem
