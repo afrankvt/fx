@@ -16,7 +16,7 @@ comp List
   {
     & { padding-top: 1em }
 
-    ul {
+    & ul {
       border: 1px solid #d9d9d9;
       width: 400px;
       margin: 0;
@@ -25,19 +25,19 @@ comp List
       float: left;
     }
 
-    li {
+    & li {
       display: block;
       padding: 10px;
       margin: 0;
       cursor: default;
     }
 
-    li.selected {
+    & li.selected {
       color: #fff;
       background: #2174bb;
     }
 
-    h2 {
+    & h2 {
       padding-left: 420px;
       margin: 0;
     }
