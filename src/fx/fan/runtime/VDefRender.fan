@@ -32,12 +32,12 @@ using dom
     }
   }
 
-  private static VNode[] renderDefs(VNode parent, Type type, TDef[] defs, Str:Obj? data)
+  private static VNode[] renderDefs(VNode parent, Type type, TDef[] defs, Str:Obj? data, Int offsetIndex := 0)
   {
     vnodes := List(type, defs.size)
     defs.each |d,i|
     {
-      v := renderDefFrag(parent, i, d, data)
+      v := renderDefFrag(parent, offsetIndex+i, d, data)
       if (v is VNode) vnodes.add(v)
       if (v is List)  vnodes.addAll(v)
     }
@@ -140,7 +140,7 @@ using dom
             {
               copy[var] = item
               if (ivar != null) copy[ivar] = i
-              kids.addAll(renderDefs(parent, VNode#, t.children, copy))
+              kids.addAll(renderDefs(parent, VNode#, t.children, copy, i))
             }
             return kids
 
