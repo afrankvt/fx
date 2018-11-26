@@ -9,7 +9,7 @@ class Build : BuildGroup
     childrenScripts =
     [
       `fx/build.fan`,
-      `fxTest/build.fan`,
+      `fxSample/build.fan`,
     ]
   }
 }

@@ -39,5 +39,5 @@ Clone repo, build, and open `index.html` in browser:
     $ git clone https://github.com/afrankvt/fx.git
     $ cd fx
     $ src/fx/build.fan
-    $ src/fxTest/build.fan
-    $ open src/fxTest/test/index.html
+    $ src/fxSample/build.fan
+    $ open src/fxSample/html/index.html
