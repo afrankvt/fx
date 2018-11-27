@@ -30,7 +30,6 @@ class IfTest : FxTest
 
     e2 := render(c, ["x":5])
     verifyEq(e2.children.size, 1)
-    // TODO: fix text nodes...
-    verifyEq(e2.children.first.children.first.text, "Worked!")
+    verifyEq(e2.children[0].children[0].text, "Worked!")
   }
 }
