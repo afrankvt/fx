@@ -9,7 +9,7 @@
 using dom
 using fx
 
-class BasicTest : Test
+class BasicTest : FxTest
 {
   Void testBasic1()
   {
@@ -54,32 +54,5 @@ class BasicTest : Test
     e3 := render(c, ["x":52])
     // TODO: fix upstream text nodes...
     verifyEq(e3.children[0].text, "52")
-  }
-
-  private FxComp build(Str src)
-  {
-    // compile
-    t := BuildFxScript.build(src, tempDir)
-
-    // init
-    elem := Elem("div")
-    body := Elem("body") { it.add(elem) }
-
-    comp := (FxComp)t.make
-    comp->__elem = elem
-    comp->__render
-
-    // TODO
-    //msg := comp.__init
-    //if (msg != null) comp.send(msg)
-
-    return comp
-  }
-
-  private Elem render(FxComp comp, Str:Obj? data)
-  {
-    data.each |v,n| { comp->__setData(n,v) }
-    comp->__render
-    return comp->__elem
   }
 }
