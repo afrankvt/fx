@@ -32,7 +32,28 @@ class BasicTest : Test
     verifyEq(e.tagName, "div")
     verifyEq(e.children.size, 1)
     verifyEq(e.children[0].tagName, "span")
+    // TODO: fix upstream text nodes...
     // verifyEq(e.children[0].text,    "Hello, World")
+  }
+
+  Void testBasic4()
+  {
+    c := build("""comp Foo {
+                    data { Int x }
+                    template { <div>{x}</div> }
+                  }""")
+    e1 := render(c, [:])
+    verifyEq(e1.tagName, "div")
+    // TODO: fix upstream text nodes...
+    verifyEq(e1.children[0].text, "0")
+
+    e2 := render(c, ["x":1])
+    // TODO: fix upstream text nodes...
+    verifyEq(e2.children[0].text, "1")
+
+    e3 := render(c, ["x":52])
+    // TODO: fix upstream text nodes...
+    verifyEq(e3.children[0].text, "52")
   }
 
   private FxComp build(Str src)
@@ -42,7 +63,7 @@ class BasicTest : Test
 
     // init
     elem := Elem("div")
-    body := Elem("div") { it.add(elem) }
+    body := Elem("body") { it.add(elem) }
 
     comp := (FxComp)t.make
     comp->__elem = elem
@@ -57,7 +78,8 @@ class BasicTest : Test
 
   private Elem render(FxComp comp, Str:Obj? data)
   {
-    // TODO: data setters
+    data.each |v,n| { comp->__setData(n,v) }
+    comp->__render
     return comp->__elem
   }
 }
