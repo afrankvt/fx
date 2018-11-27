@@ -33,6 +33,9 @@ class IfTest : FxTest
     e2 := render(c, ["x":5])
     verifyEq(e2.children.size, 1)
     verifyElem(e2.children[0], "span", "Worked!")
+
+    e3 := render(c, ["x":0])
+    verifyEq(e1.children.size, 0)
   }
 
   Void testIf2()
@@ -53,6 +56,12 @@ class IfTest : FxTest
     verifyElem(e1.children[0], "span", "Worked!")
 
     e2 := render(c, ["x":5])
+    verifySame(e1, e2)
     verifyEq(e2.children.size, 0)
+
+    e3 := render(c, ["x":0])
+    verifySame(e2, e3)
+    verifyEq(e3.children.size, 1)
+    verifyElem(e3.children[0], "span", "Worked!")
   }
 }

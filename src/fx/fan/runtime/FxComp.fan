@@ -59,7 +59,11 @@ using dom
     orig    := __elem
     vtree   := VDefRender.render(__tdef, __data)
     patches := VDiff.diff(__vtree, vtree)
-//_dump(vtree)
+// echo("### __render $__data ####")
+// echo("--a--")
+// _dump(__vtree)
+// echo("--b--")
+// _dump(vtree)
     elem := VPatcher.patch(this, __elem, patches)
 //Win.cur.log(elem)
     elem.setAttr("fx-comp", typeof.qname)
