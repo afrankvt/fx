@@ -47,4 +47,39 @@ class ForTest : FxTest
     verifyElem(e4.children[0], "li", "1")
     verifyElem(e4.children[1], "li", "8")
   }
+
+  Void testFor2()
+  {
+    // test [for] with [if] conditionals
+
+    c := build("""struct Item {
+                    Str name
+                    Bool flag
+                  }
+                  comp Foo {
+                    data { Item[] items }
+                    template {
+                      <ul>
+                      [for item in items]
+                        <li>
+                          <span>Item {item.name}</span>
+                        </li>
+                      [/for]
+                      </ul>
+                    }
+                    Void onUpdate(FxMsg msg)
+                    {
+                      items.add(Item { it.name="Alpha"; it.flag=false })
+                    }
+                  }""")
+
+    e1 := render(c, [:])
+    verifyEq(e1.children.size, 0)
+
+    c.send("init")
+    e2 := render(c, [:])
+    verifySame(e1, e2)
+    verifyEq(e2.children.size, 1)
+    verifyElem(e2.children[0], "li")
+  }
 }

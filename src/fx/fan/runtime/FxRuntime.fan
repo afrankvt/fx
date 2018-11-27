@@ -14,8 +14,16 @@ using dom
 **
 @NoDoc @Js class FxRuntime
 {
+  ** Get runtime instance for VM.
+  private static FxRuntime cur() { (curRef.val as Unsafe).val }
+  private static const AtomicRef curRef := AtomicRef(null)
+
+  // define static block after `curRef` for unit testing
   static
   {
+    // for unit testing
+    if (Env.cur.runtime != "js") return FxRuntime {}
+
     // register onload handler to boot runtime
     Win.cur.onEvent("load", false)
     {
@@ -23,10 +31,6 @@ using dom
       fx.boot
     }
   }
-
-  ** Get runtime instance for VM.
-  private static FxRuntime cur() { (curRef.val as Unsafe).val }
-  private static const AtomicRef curRef := AtomicRef(null)
 
   ** Mark component tree as dirty for render.
   internal static Void markDirty() { FxRuntime.cur.dirty = true }

@@ -32,6 +32,6 @@ using concurrent
     out.sync.close
 
     type := Env.cur.compileScript(fan)
-    return type
+    return type.pod.types.find |t| { t.fits(FxComp#) }
   }
 }
