@@ -53,18 +53,29 @@ using dom
   static Elem patch(FxComp c, Elem root, VPatch[] patches)
   {
     // echo("-- Patch [$patches.size] --")
+
+    // premap source elements since our index paths
+    // may change as we add/remove children
+    elemMap := VNode:Elem[:]
+    patches.each |p|
+    {
+      if (p.a == null) return
+      elemMap[p.a] = lookupElem(root, p.a)
+    }
+
+    // now iterate to apply changes
     patches.each |p,i|
     {
       // echo(" $i: ${p.op} a:${p.a?.parent}/${p.a} b:${p.b?.parent}/${p.b}")
       switch (p.op)
       {
         case "add":
-          ea := toElem(root, p.a)
+          ea := elemMap[p.a]
           eb := nodeToElem(c, p.b)
           ea.add(eb)
 
         case "remove":
-          ea := toElem(root, p.a)
+          ea := elemMap[p.a]
           ea.parent.remove(ea)
 
         case "replace":
@@ -77,22 +88,22 @@ using dom
           else
           {
             // replace child
-            ea := toElem(root, p.a)
+            ea := elemMap[p.a]
             ea.parent.replace(ea, eb)
           }
 
         case "addAttr":
-          elem := toElem(root, p.b)
+          elem := lookupElem(root, p.b)
           if (p.attrName == "class") elem.style.addClass(p.attrVal)
           else elem.setAttr(p.attrName, p.attrVal)
 
         case "removeAttr":
-          elem := toElem(root, p.b)
+          elem := lookupElem(root, p.b)
           if (p.attrName == "class") elem.style.removeClass(p.attrVal)
           else elem.removeAttr(p.attrName)
 
         case "updateAttr":
-          elem := toElem(root, p.b)
+          elem := lookupElem(root, p.b)
           elem.setAttr(p.attrName, p.attrVal)
       }
     }
@@ -101,7 +112,7 @@ using dom
   }
 
   ** Return the backing DOM node for this VNode.
-  private static Elem toElem(Elem root, VNode vnode)
+  private static Elem lookupElem(Elem root, VNode vnode)
   {
     // short-circuit if root
     if (vnode.parent == null) return root

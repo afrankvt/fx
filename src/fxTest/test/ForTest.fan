@@ -41,9 +41,9 @@ class ForTest : FxTest
     verifyElem(e3.children[1], "li", "8")
     verifyElem(e3.children[2], "li", "25")
 
-    // e4 := render(c, ["list":[1,8]])
-    // verifyEq(e4.children.size, 2)
-    // verifyElem(e4.children[0], "li", "1")
-    // verifyElem(e4.children[1], "li", "8")
+    e4 := render(c, ["list":[1,8]])
+    verifyEq(e4.children.size, 2)
+    verifyElem(e4.children[0], "li", "1")
+    verifyElem(e4.children[1], "li", "8")
   }
 }
