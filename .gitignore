@@ -2,3 +2,4 @@ fan.props
 lib/
 spec/
 __fxtmp/
+temp/

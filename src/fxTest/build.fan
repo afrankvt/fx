@@ -23,7 +23,8 @@ class Build : build::BuildPod
       "build 1.0",
       "graphics 1.0",
       "web 1.0",
-      "dom 1.0"
+      "dom 1.0",
+      "fx 0+"
     ]
     srcDirs = [`test/`]
   }

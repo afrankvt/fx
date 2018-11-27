@@ -52,10 +52,10 @@ using dom
 {
   static Elem patch(FxComp c, Elem root, VPatch[] patches)
   {
-    echo("-- Patch [$patches.size] --")
+    // echo("-- Patch [$patches.size] --")
     patches.each |p,i|
     {
-      echo(" $i: ${p.op} a:${p.a?.parent}/${p.a} b:${p.b?.parent}/${p.b}")
+      // echo(" $i: ${p.op} a:${p.a?.parent}/${p.a} b:${p.b?.parent}/${p.b}")
       switch (p.op)
       {
         case "add":
