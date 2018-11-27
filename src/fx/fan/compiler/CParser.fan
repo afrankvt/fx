@@ -173,14 +173,17 @@ internal class CParser
       throw unexpectedToken(token)
     }
 
+    // template is required
+    if (template == null) throw parseErr("Required template definition not found")
+
     return CCompDef
     {
       it.qname    = "${podName}::$name"
       it.name     = name
-      it.data     = data     ?: CDataDef {}
-      it.init     = init     ?: CInitDef {}
-      it.style    = style    ?: CStyleDef {}
-      it.template = template ?: CTemplateDef {}
+      it.data     = data  ?: CDataDef {}
+      it.init     = init  ?: CInitDef {}
+      it.style    = style ?: CStyleDef {}
+      it.template = template
       it.funcs    = funcs
     }
   }
