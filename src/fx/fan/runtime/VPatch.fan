@@ -175,8 +175,7 @@ using dom
 
       case VText#:
         VText v := node
-        //return Elem.makeText(v.text)
-        return Elem("span") { it.text=v.text }
+        return Elem("_text") { it.text=v.text }
 
       default: throw Err("TODO --> $node.typeof")
     }

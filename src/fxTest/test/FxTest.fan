@@ -11,8 +11,15 @@ using fx
 
 abstract class FxTest : Test
 {
+  ** Verify an element tag name and optional text
+  protected Void verifyElem(Elem elem, Str tag, Str? text := null)
+  {
+    verifyEq(elem.tagName, tag)
+    if (text != null) verifyEq(elem.children[0].text, text)
+  }
+
   ** Compile fx source code into a FxComp instance.
-  internal FxComp build(Str src)
+  protected FxComp build(Str src)
   {
     // compile
     t := BuildFxScript.build(src, tempDir)
@@ -33,7 +40,7 @@ abstract class FxTest : Test
   }
 
   ** Re-render FxComp with given data and return resulting DOM elem.
-  internal Elem render(FxComp comp, Str:Obj? data)
+  protected Elem render(FxComp comp, Str:Obj? data)
   {
     data.each |v,n| { comp->__setData(n,v) }
     comp->__render
@@ -41,7 +48,7 @@ abstract class FxTest : Test
   }
 
   ** Print DOM tree.
-  internal Void dumpElem(Elem e, Int indent := 0)
+  protected Void dumpElem(Elem e, Int indent := 0)
   {
     Env.cur.out
       .print(Str.spaces(indent))
