@@ -154,9 +154,11 @@ using dom
   ** Is value 'truthy'.
   private static Bool isTruthy(Obj? val)
   {
-    if (val is Bool) return val
-    if (val is Str)  return ((Str)val).size > 0
-    if (val != null) return true
+    if (val is Bool)  return val
+    if (val is Str)   return ((Str)val).size > 0
+    if (val is Int)   return val != 0
+    if (val is Float) return val != 0 && val != Float.nan
+    if (val != null)  return true
     return false
   }
 
