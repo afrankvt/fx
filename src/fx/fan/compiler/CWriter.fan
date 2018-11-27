@@ -95,10 +95,13 @@ class CWriter
       }
       style.addChar('\n')
     }
-    out.printLine("  static")
-    out.printLine("  {")
-    out.printLine("     dom::Win.cur.addStyleRules($style.toStr.toCode)")
-    out.printLine("  }")
+    if (style.size > 0)
+    {
+      out.printLine("  static")
+      out.printLine("  {")
+      out.printLine("     dom::Win.cur.addStyleRules($style.toStr.toCode)")
+      out.printLine("  }")
+    }
 
     // template
     if (comp.template.nodes.size > 0)
