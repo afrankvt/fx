@@ -101,9 +101,12 @@ class CWriter
     out.printLine("  }")
 
     // template
-    out.printLine("  private const TElemDef __tdeff := ")
-    writeTDef(comp.template.nodes.first, out, 4)
-    out.printLine("")
+    if (comp.template.nodes.size > 0)
+    {
+      out.printLine("  private const TElemDef __tdeff := ")
+      writeTDef(comp.template.nodes.first, out, 4)
+      out.printLine("")
+    }
 
     // init
     init := comp.init.msg.trimToNull

@@ -145,7 +145,7 @@ const class CTemplateDef : CDef
 {
   new make(|This| f) { f(this) }
 
-  const CDef[] nodes
+  const CDef[] nodes := CDef#.emptyList
 }
 
 *************************************************************************
