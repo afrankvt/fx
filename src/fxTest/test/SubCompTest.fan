@@ -26,4 +26,28 @@ class SubCompTest : FxTest
     verifyEq(e1.tagName, "div")
     verifyElem(e1.firstChild, "p", "Child")
   }
+
+  Void testSubComp2()
+  {
+    // test parent with multiple subcomps
+
+    c := build("""comp Parent {
+                    template {
+                      <div>
+                        <h1>Heading</h1>
+                        <Sub/>
+                        <Sub/>
+                        <Sub/>
+                      </div>
+                    }
+                  }
+                  comp Sub { template { <p>Child</p> }}""")
+
+    e1 := render(c, [:])
+    verifyEq(e1.children.size, 4)
+    verifyElem(e1.children[0], "h1", "Heading")
+    verifyElem(e1.children[1], "p",  "Child")
+    verifyElem(e1.children[2], "p",  "Child")
+    verifyElem(e1.children[3], "p",  "Child")
+  }
 }
