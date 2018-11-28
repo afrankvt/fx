@@ -9,9 +9,9 @@
 using dom
 
 **
-** VDefRender renders a TDef and data set to a VNode tree.
+** TDefRender renders a TDef and data set to a VNode tree.
 **
-@NoDoc @Js const class VDefRender
+@NoDoc @Js const class TDefRender
 {
   ** Render a TDef tree into virtual VNode DOM tree.
   static VElem render(TElemDef def, Str:Obj? data)

@@ -57,7 +57,7 @@ using dom
     // or some type of flag; we can safely skip that check at runtime
 
     orig    := __elem
-    vtree   := VDefRender.render(__tdef, __data)
+    vtree   := TDefRender.render(__tdef, __data)
     patches := VDiff.diff(__vtree, vtree)
 // echo("### __render $__data ####")
 // echo("--a--")
