@@ -15,7 +15,7 @@ using dom
 @NoDoc @Js class FxRuntime
 {
   ** Get runtime instance for VM.
-  private static FxRuntime cur() { (curRef.val as Unsafe).val }
+  internal static FxRuntime cur() { (curRef.val as Unsafe).val }
   private static const AtomicRef curRef := AtomicRef(null)
 
   // define static block after `curRef` for unit testing
@@ -59,10 +59,14 @@ using dom
   }
 
   ** Mount fxcomp into runtime.
-  private Void mount(Elem elem)
+  internal Void mount(Elem elem)
   {
     qname := elem.attr("fx-comp")
-    comp  := (FxComp)Type.find(qname).make
+    type  := testPod==null
+      ? Type.find(qname)
+      : testPod.type(qname[qname.index("::")+2..-1])
+
+    comp := (FxComp)type.make
     comp.__elem = elem
     comp.__render
 
@@ -113,4 +117,5 @@ using dom
 
   private FxComp[] comps := [,]     // top-level comps
   private Bool dirty     := false   // render dirty flag
+  internal Pod? testPod  := null    // used by test framework for type loading
 }

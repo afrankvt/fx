@@ -163,23 +163,12 @@ using dom
     {
       case VElem#:
         VElem v := node
-        if (v.isComp) throw Err("Subcomp not yet implemented")
-        // {
-        //   // TODO FIXIT
-        //   ca := v.attrs.find |a| { a.name == "fx-comp" }
-        //   elem := FxElem { it.setAttr("fx-comp", ca.val) }
-        //   elem.mount
-        //   elem.comp.parent = c
-        //   attrs.each |a|
-        //   {
-        //     if (a.name == "fx-comp") return
-        //     elem.setAttr(a.name, a.val)
-        //   }
-        //   elem.render
-        //   elem.init
-        //   parent.add(elem)
-        //   return parent
-        // }
+        if (v.isComp)
+        {
+          e := Elem(v.tag) { it.setAttr("fx-comp", v.qname) }
+          FxRuntime.cur.mount(e)
+          return e
+        }
         else
         {
           e := Elem(v.tag)

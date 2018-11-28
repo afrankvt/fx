@@ -32,6 +32,7 @@ using concurrent
     out.sync.close
 
     type := Env.cur.compileScript(fan)
+    FxRuntime.cur.testPod = type.pod
     return type.pod.types.find |t| { t.fits(FxComp#) }
   }
 }

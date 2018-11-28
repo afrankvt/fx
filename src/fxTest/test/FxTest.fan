@@ -54,7 +54,12 @@ abstract class FxTest : Test
     out.print(Str.spaces(indent))
     out.print("$v.index: ")
 
-    if (v is VElem) out.print(v->tag)
+    if (v is VElem)
+    {
+      VElem e := v
+      if (e.isComp) out.print("comp $e.qname")
+      else out.print(e.tag)
+    }
     else if (v is VText) out.print(v->text)
     else out.print(v)
 

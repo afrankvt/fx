@@ -32,10 +32,13 @@
   new make(|This| f)
   {
     f(this)
-    this.isComp = attrs.any |a| { a.name == "fx-comp " }
+    comp := attrs.find |a| { a.name == "fx-comp" }
+    this.qname = comp?.val
   }
 
-  const Bool isComp       // is comp
+  Bool isComp() { qname != null }
+
+  const Str? qname        // comp type qname
   const Str tag           // tag name
   const VAttr[] attrs     // attributes
   const VEvent[] events   // event bindings

@@ -67,7 +67,7 @@ using dom
     elem := VPatcher.patch(this, __elem, patches)
 //Win.cur.log(elem)
     elem.setAttr("fx-comp", typeof.qname)
-    if (orig != null) orig.parent.replace(orig, elem)
+    if (orig != null) orig.parent?.replace(orig, elem)
     this.__vtree = vtree
     this.__elem  = elem
   }
