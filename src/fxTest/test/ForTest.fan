@@ -62,14 +62,27 @@ class ForTest : FxTest
                       <ul>
                       [for item in items]
                         <li>
-                          <span>Item {item.name}</span>
+                          {item.name}
+                          [if item.flag]<span>Flag</span>[/if]
                         </li>
                       [/for]
                       </ul>
                     }
                     Void onUpdate(FxMsg msg)
                     {
-                      items.add(Item { it.name="Alpha"; it.flag=false })
+                      if (msg.name == "init")
+                      {
+                        items.add(Item { it.name="Item #1" })
+                        items.add(Item { it.name="Item #2" })
+                        items.add(Item { it.name="Item #3" })
+                        items.add(Item { it.name="Item #4" })
+                        items.add(Item { it.name="Item #5" })
+                      }
+                      if (msg.name == "flag")
+                      {
+                        Int i := msg->index
+                        items[i].flag = !items[i].flag
+                      }
                     }
                   }""")
 
@@ -79,7 +92,37 @@ class ForTest : FxTest
     c.send("init")
     e2 := render(c, [:])
     verifySame(e1, e2)
-    verifyEq(e2.children.size, 1)
-    verifyElem(e2.children[0], "li")
+    verifyEq(e2.children.size, 5)
+    verifyEq(e2.children[0].tagName, "li")
+    verifyEq(e2.children[0].children.size, 1)
+    verifyEq(e2.children[0].children[0].text, "Item #1")
+    verifyEq(e2.children[2].tagName, "li")
+    verifyEq(e2.children[2].children.size, 1)
+    verifyEq(e2.children[2].children[0].text, "Item #3")
+    verifyEq(e2.children[4].tagName, "li")
+    verifyEq(e2.children[4].children.size, 1)
+    verifyEq(e2.children[4].children[0].text, "Item #5")
+
+    c.send("flag", ["index":2])
+    e3 := render(c, [:])
+    verifySame(e2, e3)
+    verifyEq(e2.children.size, 5)
+    verifyEq(e2.children[0].tagName, "li")
+    verifyEq(e2.children[0].children.size, 1)
+    verifyEq(e2.children[0].children[0].text, "Item #1")
+    verifyEq(e2.children[2].tagName, "li")
+    verifyEq(e2.children[2].children.size, 2)
+    verifyEq(e2.children[2].children[0].text, "Item #3")
+    verifyEq(e2.children[4].tagName, "li")
+    verifyEq(e2.children[4].children.size, 1)
+    verifyEq(e2.children[4].children[0].text, "Item #5")
+
+    c.send("flag", ["index":2])
+    e4 := render(c, [:])
+    verifySame(e3, e4)
+    verifyEq(e2.children.size, 5)
+    verifyEq(e2.children[2].tagName, "li")
+    verifyEq(e2.children[2].children.size, 1)
+    verifyEq(e2.children[2].children[0].text, "Item #3")
   }
 }

@@ -136,6 +136,26 @@ using dom
     return elem
   }
 
+  ** Return the DOM index path.
+  private static Str lookupPath(VNode vnode)
+  {
+    s := "$vnode.index"
+
+    // short-circuit if root
+    if (vnode.parent == null) return s
+
+    // walk up to find index path
+    path := Int[vnode.index]
+    vn := vnode.parent
+    while (vn != null)
+    {
+      s += ",${vn.index}"
+      vn = vn.parent
+    }
+
+    return s
+  }
+
   ** Compile a VNode to DOM Elem instance.
   static Elem nodeToElem(FxComp c, VNode node)
   {

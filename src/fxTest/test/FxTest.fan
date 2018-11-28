@@ -47,6 +47,21 @@ abstract class FxTest : Test
     return comp->__elem
   }
 
+  ** Print VNode tree.
+  protected Void dumpVTree(VNode v, Int indent := 0)
+  {
+    out := Env.cur.out
+    out.print(Str.spaces(indent))
+    out.print("$v.index: ")
+
+    if (v is VElem) out.print(v->tag)
+    else if (v is VText) out.print(v->text)
+    else out.print(v)
+
+    out.printLine
+    v.children.each |k| { dumpVTree(k, indent+2) }
+  }
+
   ** Print DOM tree.
   protected Void dumpElem(Elem e, Int indent := 0)
   {
