@@ -32,8 +32,21 @@
 
   const Bool isComp                 // is comp
   const Str tag                     // elem tag name
+  const TBindDef[] binds   := [,]   // elem var bindings
   const TAttrDef[] attrs   := [,]   // elem attrs
   const TEventDef[] events := [,]   // elem event handlers
+}
+
+*************************************************************************
+** TBindDef
+*************************************************************************
+
+@NoDoc @Js const class TBindDef : TDef
+{
+  new make(|This| f) { f(this) }
+
+  const Str local   // local var name
+  const Str extern  // external var name
 }
 
 *************************************************************************

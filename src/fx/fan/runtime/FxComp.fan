@@ -142,7 +142,11 @@ private Void _dump(VNode n)
   }
 
   ** Delegate extern getter to parent.
-  protected Obj? __getExtern(Str name) { parent.typeof.field(name).get(parent) }
+  protected Obj? __getExtern(Str name)
+  {
+    // TODO: better error message here
+    parent.typeof.field(name).get(parent)
+  }
 
   ** Delegate extern setter to parent.
   protected Void __setExtern(Str name, Obj val) { parent.typeof.field(name).set(parent, val) }

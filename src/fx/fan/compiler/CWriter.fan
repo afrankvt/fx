@@ -149,9 +149,17 @@ class CWriter
         CTElemDef e := def
         out.print(sp).printLine("TElemDef {")
         out.print(sp).printLine("  it.tag = $e.tagName.toCode")
+        writeTDefList("binds",    e.binds,    out, indent+2)
         writeTDefList("attrs",    e.attrs,    out, indent+2)
         writeTDefList("events",   e.events,   out, indent+2)
         writeTDefList("children", e.children, out, indent+2)
+        out.print(sp).print("}")
+
+      case CTBindDef#:
+        CTBindDef b := def
+        out.print(sp).printLine("TBindDef { ")
+        out.print(sp).printLine("  it.local=${b.local.toCode}")
+        out.print(sp).printLine("  it.extern=${b.extern.toCode}")
         out.print(sp).print("}")
 
       case CTAttrDef#:

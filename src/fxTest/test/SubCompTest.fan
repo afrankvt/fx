@@ -50,4 +50,34 @@ class SubCompTest : FxTest
     verifyElem(e1.children[2], "p",  "Child")
     verifyElem(e1.children[3], "p",  "Child")
   }
+
+  Void testSubComp3()
+  {
+    // test extern bindings with sub comps
+
+    c := build("""comp Foo {
+                    data { Str[] zones }
+                    template {
+                      <div>
+                        [for zone in zones]
+                          <Zone &name="zone" />
+                        [/for]
+                      </div>
+                    }
+                    Void onUpdate(FxMsg m)
+                    {
+                      zones.add("Alpha")
+                      zones.add("Beat")
+                      zones.add("Gamma")
+                    }
+                  }
+                  comp Zone {
+                    data { extern Str name }
+                    template { <p>Zone {name}</p> }
+                  }""")
+
+    c.send("init")
+    e1 := render(c, [:])
+dumpElem(e1)
+  }
 }
