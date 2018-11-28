@@ -53,6 +53,8 @@ using dom
   ** Render component.
   internal Void __render()
   {
+// echo("# render: $this.typeof.qname")
+
     // TODO: optimize static attributes and children; if set to 'const'
     // or some type of flag; we can safely skip that check at runtime
 
@@ -67,7 +69,7 @@ using dom
     elem := VPatcher.patch(this, __elem, patches)
 //Win.cur.log(elem)
     elem.setAttr("fx-comp", typeof.qname)
-    if (orig != null) orig.parent?.replace(orig, elem)
+    if (orig != null) orig.parent.replace(orig, elem)
     this.__vtree = vtree
     this.__elem  = elem
   }

@@ -70,16 +70,19 @@ using dom
       switch (p.op)
       {
         case "add":
-          ea := elemMap[p.a]
-          eb := nodeToElem(c, p.b)
+          sub := Elem[,]
+          ea  := elemMap[p.a]
+          eb  := nodeToElem(c, p.b, sub)
           ea.add(eb)
+          sub.each |s| { FxRuntime.cur.mount(s) }
 
         case "remove":
           ea := elemMap[p.a]
           ea.parent.remove(ea)
 
         case "replace":
-          eb := nodeToElem(c, p.b)
+          sub := Elem[,]
+          eb  := nodeToElem(c, p.b, sub)
           if (p.b.parent == null)
           {
             // replace root
@@ -91,6 +94,7 @@ using dom
             ea := elemMap[p.a]
             ea.parent.replace(ea, eb)
           }
+          sub.each |s| { FxRuntime.cur.mount(s) }
 
         case "addAttr":
           elem := lookupElem(root, p.b)
@@ -157,41 +161,33 @@ using dom
   }
 
   ** Compile a VNode to DOM Elem instance.
-  static Elem nodeToElem(FxComp c, VNode node)
+  static Elem nodeToElem(FxComp c, VNode node, Elem[] subComps)
   {
     switch (node.typeof)
     {
       case VElem#:
         VElem v := node
-        if (v.isComp)
+        e := Elem(v.tag)
+        if (v.isComp) subComps.add(e)
+        v.attrs.each |k|
         {
-          e := Elem(v.tag) { it.setAttr("fx-comp", v.qname) }
-          FxRuntime.cur.mount(e)
-          return e
+          VAttr va := k
+          if (va.val.size > 0)
+          {
+            if (va.name == "class") e.style.addClass(va.val)
+            else e.setAttr(va.name, va.val.toStr)
+          }
         }
-        else
+        v.events.each |k|
         {
-          e := Elem(v.tag)
-          v.attrs.each |k|
-          {
-            VAttr va := k
-            if (va.val.size > 0)
-            {
-              if (va.name == "class") e.style.addClass(va.val)
-              else e.setAttr(va.name, va.val.toStr)
-            }
-          }
-          v.events.each |k|
-          {
-            VEvent ve := k
-            e.onEvent(ve.name, false) { c.send(ve.msg, ve.data) }
-          }
-          v.children.each |k|
-          {
-            e.add(nodeToElem(c, k))
-          }
-          return e
+          VEvent ve := k
+          e.onEvent(ve.name, false) { c.send(ve.msg, ve.data) }
         }
+        v.children.each |k|
+        {
+          e.add(nodeToElem(c, k, subComps))
+        }
+        return e
 
       case VText#:
         VText v := node

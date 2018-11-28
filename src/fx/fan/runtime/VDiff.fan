@@ -51,6 +51,10 @@ using dom
     if (a.tag != b.tag)
       return patches.add(VPatch { it.op="replace"; it.a=a; it.b=b })
 
+    // replace if comp type do not match
+    if (a.qname != b.qname)
+      return patches.add(VPatch { it.op="replace"; it.a=a; it.b=b })
+
     // if kids match check 1:1
     if (a.children.size == b.children.size)
     {
