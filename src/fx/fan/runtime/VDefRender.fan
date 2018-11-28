@@ -116,7 +116,7 @@ using dom
           case "ifnot":
             val  := resolveExpr(t.expr, data)
             cond := t.dir == "if" ? isTruthy(val) : !isTruthy(val)
-            return cond==false ? null : renderDefs(parent, VNode#, t.children, data)
+            return cond==false ? null : renderDefs(parent, VNode#, t.children, data, index)
 
           case "for":
             // TODO: handle this at compile time with pre-computed info
