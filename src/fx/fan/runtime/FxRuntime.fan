@@ -15,7 +15,8 @@ using dom
 @NoDoc @Js class FxRuntime
 {
   ** Get runtime instance for VM.
-  internal static FxRuntime cur() { (curRef.val as Unsafe).val }
+// TODO: static or cur access??????
+  @NoDoc static FxRuntime cur() { (curRef.val as Unsafe).val }
   private static const AtomicRef curRef := AtomicRef(null)
 
   // define static block after `curRef` for unit testing
@@ -58,6 +59,21 @@ using dom
     Win.cur.reqAnimationFrame { render }
   }
 
+  ** Instantiate a new comp.
+  @NoDoc FxComp makeComp(Type type)
+  {
+    // do an initial render to prime comp
+    comp := (FxComp)type.make
+    comp.__elem = Elem {}
+    comp.__render
+
+    // send init message if specified
+    msg := comp.__init
+    if (msg != null) comp.send(msg)
+
+    return comp
+  }
+
   ** Mount fxcomp into runtime.
   internal Void mount(Elem elem)
   {
@@ -66,13 +82,7 @@ using dom
       ? Type.find(qname)
       : testPod.type(qname[qname.index("::")+2..-1])
 
-    comp := (FxComp)type.make
-    comp.__elem = elem
-    comp.__render
-
-    msg := comp.__init
-    if (msg != null) comp.send(msg)
-
+    comp := makeComp(type)
     comps.add(comp)
   }
 

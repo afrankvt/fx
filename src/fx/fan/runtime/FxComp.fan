@@ -31,6 +31,7 @@ using dom
 
   ** Send a message to this component after the given internval.
 // TODO: data
+// sendLater(Duration timeout, Str name, Str:Obj? data := [:]) ??
   Void sendLater(Str name, Duration timeout)
   {
     Win.cur.setTimeout(timeout) { send(name) }
@@ -42,54 +43,26 @@ using dom
 
   protected virtual Obj? __init() { null }
 
-  // do not define an __onMsg method so subclasses can parameterize args
-  // virtual Void __onMsg(...) {}
-
-  //protected abstract FxVdom __vdom()
-
   ** Template AST; CWriter will generate the __tdeff field.
   internal TDef __tdef() { this->__tdeff }
 
   ** Render component.
   internal Void __render()
   {
-// echo("# render: $this.typeof.qname")
-
     // TODO: optimize static attributes and children; if set to 'const'
     // or some type of flag; we can safely skip that check at runtime
 
     orig    := __elem
     vtree   := TDefRender.render(__tdef, __data)
     patches := VDiff.diff(__vtree, vtree)
-// echo("### __render $__data ####")
-// echo("--a--")
-// _dump(__vtree)
-// echo("--b--")
-// _dump(vtree)
     elem := VPatcher.patch(this, __elem, patches)
-//Win.cur.log(elem)
+
     elem.setAttr("fx-comp", typeof.qname)
-    if (orig != null) orig.parent.replace(orig, elem)
     this.__vtree = vtree
     this.__elem  = elem
+
+    if (orig.parent != elem.parent) orig.parent.replace(orig, elem)
   }
-
-private Void _dump(VNode n)
-{
-  // find depth
-  d := 0
-  VNode? p := n.parent
-  while (p != null) { d++; p=p.parent }
-
-  x := ""
-  if (n is VElem) { x = " <${((VElem)n).tag}>" }
-  if (n is VText) { x = " ${((VText)n).text}" }
-
-  echo(Str.spaces(d*2) + "${n.index}: ${n.typeof}" + x)
-
-
-  n.children.each |k| { _dump(k) }
-}
 
   ** Get data map based on current state.
   internal Str:Obj? __data()
@@ -152,6 +125,6 @@ private Void _dump(VNode n)
   protected Void __setExtern(Str name, Obj val) { parent.typeof.field(name).set(parent, val) }
 
   private VElem? __vtree := VDiff.nullTree  // current virtual tree
-  internal Elem? __elem  := null           // current dom elem
-  internal Bool __dirty  := true           // TODO: flag we need to re-render
+  internal Elem? __elem  := null            // current dom elem
+  internal Bool __dirty  := true            // TODO: flag we need to re-render
 }

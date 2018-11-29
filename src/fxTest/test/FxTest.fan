@@ -23,19 +23,7 @@ abstract class FxTest : Test
   {
     // compile
     t := BuildFxScript.build(src, tempDir)
-
-    // init
-    elem := Elem("div")
-    body := Elem("body") { it.add(elem) }
-
-    comp := (FxComp)t.make
-    comp->__elem = elem
-    comp->__render
-
-    // TODO
-    //msg := comp.__init
-    //if (msg != null) comp.send(msg)
-
+    comp := FxRuntime.cur.makeComp(t)
     return comp
   }
 
