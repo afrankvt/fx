@@ -66,7 +66,7 @@ using dom
   }
 
   ** Mount fxcomp into runtime.
-  internal Void mount(Elem elem)
+  @NoDoc Void mount(Elem elem)
   {
     qname := elem.attr("fx-comp")
     type  := testPod==null

@@ -25,4 +25,6 @@
   {
     data[name]
   }
+
+  override Str toStr() { "$name $data" }
 }

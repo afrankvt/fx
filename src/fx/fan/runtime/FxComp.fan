@@ -71,13 +71,12 @@ using dom
     this.__vtree = vtree
     this.__elem  = elem
 
-    // TODO: still not right...
-    //elem.querySelectorAll("[fx-comp]").each |kid|
-    elem.children.findAll |k| { k.attr("fx-comp") != null }.each |kid|
+    // TODO: how should this work?
+    elem.querySelectorAll("[fx-comp]").each |kid|
     {
       sub := kid.prop("fxComp") as FxComp
       sub.__render
-      elem.replace(kid, sub.__elem)
+      kid.parent.replace(kid, sub.__elem)
     }
 
     if (orig.parent != elem.parent) orig.parent.replace(orig, elem)
