@@ -140,7 +140,7 @@ using dom
             }
 
             kids := VNode[,]
-            List list := copy[prop]
+            List list := resolveExpr(prop, copy)
             list.each |item,i|
             {
               copy[var] = item
