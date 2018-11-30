@@ -85,7 +85,7 @@ class CWriter
       xline.split(' ').each |s|
       {
         if (s.size == 0) return
-        if (s == "&") s = scope
+        if (s.startsWith("&")) s = s.replace("&", scope)
         else if (s[0].isUpper)
         {
           if (!s.contains("::")) s = "${podName}::${s}"
