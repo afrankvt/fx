@@ -67,7 +67,7 @@ class SubCompTest : FxTest
                     Void onUpdate(FxMsg m)
                     {
                       zones.add("Alpha")
-                      zones.add("Beat")
+                      zones.add("Beta")
                       zones.add("Gamma")
                     }
                   }
@@ -78,6 +78,16 @@ class SubCompTest : FxTest
 
     c.send("init")
     e1 := render(c, [:])
-dumpElem(e1)
+    verifyEq(e1.children.size, 3)
+    verifySubComp3(e1.children[0], "Alpha")
+    verifySubComp3(e1.children[1], "Beta")
+    verifySubComp3(e1.children[2], "Gamma")
+  }
+
+  private Void verifySubComp3(Elem zone, Str name)
+  {
+    verifyEq(zone.tagName, "p")
+    verifyEq(zone.children[0].text, "Zone ")
+    verifyEq(zone.children[1].text, name)
   }
 }

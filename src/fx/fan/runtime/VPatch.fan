@@ -70,19 +70,16 @@ using dom
       switch (p.op)
       {
         case "add":
-          sub := Elem[,]
-          ea  := elemMap[p.a]
-          eb  := nodeToElem(c, p.b, sub)
+          ea := elemMap[p.a]
+          eb := nodeToElem(c, p.b)
           ea.add(eb)
-          sub.each |s| { FxRuntime.cur.mount(s) }
 
         case "remove":
           ea := elemMap[p.a]
           ea.parent.remove(ea)
 
         case "replace":
-          sub := Elem[,]
-          eb  := nodeToElem(c, p.b, sub)
+          eb := nodeToElem(c, p.b)
           if (p.b.parent == null)
           {
             // replace root
@@ -94,7 +91,6 @@ using dom
             ea := elemMap[p.a]
             ea.parent.replace(ea, eb)
           }
-          sub.each |s| { FxRuntime.cur.mount(s) }
 
         case "addAttr":
           elem := lookupElem(root, p.b)
@@ -161,14 +157,13 @@ using dom
   }
 
   ** Compile a VNode to DOM Elem instance.
-  static Elem nodeToElem(FxComp c, VNode node, Elem[] subComps)
+  static Elem nodeToElem(FxComp c, VNode node)
   {
     switch (node.typeof)
     {
       case VElem#:
         VElem v := node
         e := Elem(v.tag)
-        if (v.isComp) subComps.add(e)
         v.attrs.each |k|
         {
           VAttr va := k
@@ -185,7 +180,18 @@ using dom
         }
         v.children.each |k|
         {
-          e.add(nodeToElem(c, k, subComps))
+          e.add(nodeToElem(c, k)) //, subComps))
+        }
+        if (v.isComp)
+        {
+          sub := FxRuntime.cur.elemToComp(e)
+          sub.parent = c
+          if (v.binds.size > 0)
+          {
+            sub.__externs = Str:Str[:]
+            v.binds.each |b| { sub.__externs[b.local] = b.val }
+          }
+          e.setProp("fxComp", sub)
         }
         return e
 

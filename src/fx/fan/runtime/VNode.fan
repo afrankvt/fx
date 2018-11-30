@@ -40,6 +40,7 @@
 
   const Str? qname        // comp type qname
   const Str tag           // tag name
+  const VBind[] binds     // binds (from comps)
   const VAttr[] attrs     // attributes
   const VEvent[] events   // event bindings
 }
@@ -52,6 +53,18 @@
 {
   new make(|This| f) { f(this) }
   const Str text
+}
+
+*************************************************************************
+** VBind
+*************************************************************************
+
+@Js const class VBind : VNode
+{
+  new make(|This| f) { f(this) }
+  const Str local
+  const Str extern
+  const Unsafe val
 }
 
 *************************************************************************

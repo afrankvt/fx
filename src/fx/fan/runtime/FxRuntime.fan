@@ -42,12 +42,6 @@ using dom
     FxRuntime.curRef.compareAndSet(null, Unsafe(this))
   }
 
-  // TODO: how should this work
-  @NoDoc static Void _mount(Elem elem)
-  {
-    FxRuntime.cur.mount(elem)
-  }
-
   ** Boot runtime.
   private Void boot()
   {
@@ -55,23 +49,20 @@ using dom
     elems := Win.cur.doc.querySelectorAll("[fx-comp]")
     elems.each |e| { mount(e) }
 
+    // make sure we do an inital render
+    markDirty
+
     // setup renderer loop
     Win.cur.reqAnimationFrame { render }
   }
 
-  ** Instantiate a new comp.
-  @NoDoc FxComp makeComp(Type type)
+  internal FxComp elemToComp(Elem elem)
   {
-    // do an initial render to prime comp
-    comp := (FxComp)type.make
-    comp.__elem = Elem {}
-    comp.__render
-
-    // send init message if specified
-    msg := comp.__init
-    if (msg != null) comp.send(msg)
-
-    return comp
+    qname := elem.attr("fx-comp")
+    type  := testPod==null
+      ? Type.find(qname)
+      : testPod.type(qname[qname.index("::")+2..-1])
+    return type.make
   }
 
   ** Mount fxcomp into runtime.
@@ -82,7 +73,8 @@ using dom
       ? Type.find(qname)
       : testPod.type(qname[qname.index("::")+2..-1])
 
-    comp := makeComp(type)
+    comp := (FxComp)type.make
+    comp.__elem = elem
     comps.add(comp)
   }
 

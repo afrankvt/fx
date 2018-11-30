@@ -23,7 +23,7 @@ abstract class FxTest : Test
   {
     // compile
     t := BuildFxScript.build(src, tempDir)
-    comp := FxRuntime.cur.makeComp(t)
+    comp := t.make
     return comp
   }
 

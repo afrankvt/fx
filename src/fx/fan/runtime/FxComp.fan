@@ -49,17 +49,36 @@ using dom
   ** Render component.
   internal Void __render()
   {
+    // check if we need init
+    if (!hasInit)
+    {
+      hasInit = true
+      msg := __init
+      if (msg != null) send(msg)
+    }
+
     // TODO: optimize static attributes and children; if set to 'const'
     // or some type of flag; we can safely skip that check at runtime
 
     orig    := __elem
     vtree   := TDefRender.render(__tdef, __data)
     patches := VDiff.diff(__vtree, vtree)
-    elem := VPatcher.patch(this, __elem, patches)
+    elem    := VPatcher.patch(this, __elem, patches)
 
     elem.setAttr("fx-comp", typeof.qname)
+    elem.setProp("fxComp", this)
+
     this.__vtree = vtree
     this.__elem  = elem
+
+    // TODO: still not right...
+    //elem.querySelectorAll("[fx-comp]").each |kid|
+    elem.children.findAll |k| { k.attr("fx-comp") != null }.each |kid|
+    {
+      sub := kid.prop("fxComp") as FxComp
+      sub.__render
+      elem.replace(kid, sub.__elem)
+    }
 
     if (orig.parent != elem.parent) orig.parent.replace(orig, elem)
   }
@@ -115,16 +134,14 @@ using dom
   }
 
   ** Delegate extern getter to parent.
-  protected Obj? __getExtern(Str name)
-  {
-    // TODO: better error message here
-    parent.typeof.field(name).get(parent)
-  }
+  protected Obj? __getExtern(Str local) { (__externs[local] as Unsafe).val }
 
   ** Delegate extern setter to parent.
   protected Void __setExtern(Str name, Obj val) { parent.typeof.field(name).set(parent, val) }
 
-  private VElem? __vtree := VDiff.nullTree  // current virtual tree
-  internal Elem? __elem  := null            // current dom elem
-  internal Bool __dirty  := true            // TODO: flag we need to re-render
+  private Bool hasInit    := false           // has init been called yet
+  private VElem? __vtree  := VDiff.nullTree  // current virtual tree
+  internal Elem? __elem   := Elem {}         // current dom elem
+  internal Map? __externs := null            // local:extern name mapping
+  internal Bool __dirty   := true            // TODO: flag we need to re-render
 }

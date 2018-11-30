@@ -139,6 +139,7 @@ using dom
   static const VNode nullTree := VElem
   {
     it.tag    = "_null_"
+    it.binds  = VBind#.emptyList
     it.attrs  = VAttr#.emptyList
     it.events = VEvent#.emptyList
   }

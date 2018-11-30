@@ -26,6 +26,7 @@ using dom
       it.parent   = parent
       it.index    = index
       it.tag      = def.tag
+      it.binds    = renderDefs(it, VBind#,  def.binds, data)
       it.attrs    = renderDefs(it, VAttr#,  def.attrs, data)
       it.events   = renderDefs(it, VEvent#, def.events, data)
       it.children = renderDefs(it, VNode#,  def.children, data)
@@ -54,6 +55,10 @@ using dom
       case TTextDef#:
         TTextDef t := def
         return VText { it.parent=parent; it.index=index; it.text=t.text }
+
+      case TBindDef#:
+        TBindDef t := def
+        return VBind { it.local=t.local; it.extern=t.extern; it.val=Unsafe(data[t.extern]) }
 
       case TAttrDef#:
         TAttrDef t := def
