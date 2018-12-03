@@ -39,6 +39,8 @@ abstract class BuildFxPod : BuildPod
   ** Compile '*.fx' source files into '*.fan' files under 'dir'.
   private Void compileFx(File outDir)
   {
+    if (fxDirs == null || fxDirs.isEmpty) return
+
     log.info("CompileFx [$podName]")
     fxDirs.each |dir|
     {
