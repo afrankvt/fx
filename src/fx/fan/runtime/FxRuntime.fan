@@ -78,6 +78,12 @@ using dom
     comps.add(comp)
   }
 
+  internal Void addComp(FxComp c)
+  {
+    comps.add(c)
+    markDirty
+  }
+
   // TODO: some mech for unmount?
 
   ** Render vdom if needed.

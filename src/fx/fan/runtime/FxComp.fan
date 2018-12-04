@@ -11,15 +11,25 @@ using dom
 **
 ** Base class of Fx components.
 **
-@NoDoc @Js abstract class FxComp
+@Js abstract class FxComp
 {
 
 //////////////////////////////////////////////////////////////////////////
 // Public API
 //////////////////////////////////////////////////////////////////////////
 
+  // TODO: not sure how this works yet
+  @NoDoc static FxComp create(Str qname, Str:Obj? data := [:])
+  {
+    FxComp comp := Type.find(qname).make
+    data.each |v,n| { comp.__setData(n, v) }
+    FxRuntime.cur.addComp(comp)
+    return comp
+  }
+
   ** Parent instance for this component, or 'null' if root.
-  FxComp? parent := null
+  // TODO: ???
+  @NoDoc FxComp? parent := null
 
   ** Send a message to this componen.
   Void send(Str name, Str:Obj? data := [:])
