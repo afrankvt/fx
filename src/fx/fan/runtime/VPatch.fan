@@ -189,7 +189,9 @@ using dom
           if (v.binds.size > 0)
           {
             sub.__externs = Str:Str[:]
-            v.binds.each |b| { sub.__externs[b.local] = b.val }
+            v.binds.each |b| {
+              sub.__externs[b.local] = b.extern == "this" ? Unsafe(c) : b.val
+            }
           }
           e.setProp("fxComp", sub)
         }

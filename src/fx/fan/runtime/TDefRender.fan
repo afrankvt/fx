@@ -105,7 +105,7 @@ using dom
             edat[k] = v
           }
         }
-//        echo("# $name / $edat")
+//        echo("# $t.name => $name / $edat")
         return VEvent { it.name=t.name; it.msg=name; it.data=edat }
 
       case TExprDef#:
